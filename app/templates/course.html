@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Все курсы — EduFlex{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/course.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="course-card">
+        <h1 class="course-title">{{ course.title }}</h1>
+        <p class="course-description">{{ course.description }}</p>
+
+        <div class="course-meta">
+            <p><strong>Преподаватель:</strong> {{ course.teacher }}</p>
+            <div class="rating">⭐ {{ course.rating }} ({{ course.reviews }} отзывов)</div>
+        </div>
+
+        {% if course in current_user.courses %}
+            <a href="{{ url_for('courses.course_learning', slug=course.slug) }}" class="btn">Продолжить обучение</a>
+        {% else %}
+            <a href="{{ url_for('courses.course_learning', slug=course.slug) }}" class="btn">Начать обучение</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

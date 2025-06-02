@@ -1,0 +1,15 @@
+// responsive.scss
+@import "variables.scss"; // Импортируем переменные из файла variables.scss
+
+// Миксин для медиазапросов
+@mixin media-query($size) {
+    @if $size == 'small' {
+        @media (max-width: $breakpoint-small) { @content; }
+    }
+    @else if $size == 'medium' {
+        @media (max-width: $breakpoint-medium) { @content; }
+    }
+    @else if $size == 'large' {
+        @media (max-width: $breakpoint-large) { @content; }
+    }
+}

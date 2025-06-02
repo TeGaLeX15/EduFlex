@@ -1,0 +1,147 @@
+@import "variables";
+
+.settings {
+    background-color: var(--background-color);
+    max-width: 1100px;
+    margin: 0 auto;
+
+    .settings-section {
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+
+        .settings-options {
+            display: flex;
+            flex-direction: column;
+
+            .settings-item {
+                padding-bottom: 20px;
+                margin-bottom: 20px;
+
+                &:not(:last-child) {
+                    border-bottom: 1px solid var(--hover-bg-color);
+                }
+
+                label {
+                    font-weight: bold;
+                    font-size: 1rem;
+                    display: block;
+                    margin-bottom: 8px;
+                    color: var(--text-color);
+                }
+
+                input,
+                select {
+                    width: 100%;
+                    padding: 10px;
+                    font-size: 1rem;
+                    border: 1px solid var(--gray-color);
+                    border-radius: 4px;
+                    background-color: var(--background-color);
+                    color: var(--text-color);
+                    transition: border 0.3s ease;
+
+                    &:focus {
+                        border-color: var(--primary-color);
+                        outline: none;
+                    }
+                }
+
+                &.horizontal {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    label {
+                        margin-bottom: 0;
+                    }
+
+                    .change-password-btn,
+                    .logout-btn {
+                        margin-left: auto;
+                    }
+                }
+
+                // Toggle
+                .toggle {
+                    position: relative;
+                    width: 40px;
+                    height: 20px;
+
+                    input[type="checkbox"] {
+                        display: none;
+
+                        &:checked + label {
+                            background-color: var(--primary-color);
+                        }
+                    }
+
+                    label {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: #ccc; // Нейтральный фон, если неактивен
+                        border-radius: 20px;
+                        cursor: pointer;
+                        transition: background-color 0.3s ease;
+                    }
+
+                    label:before {
+                        content: "";
+                        position: absolute;
+                        top: 2px;
+                        left: 2px;
+                        width: 16px;
+                        height: 16px;
+                        background-color: var(--white-color);
+                        border-radius: 50%;
+                        transition: transform 0.3s ease;
+                    }
+
+                    input[type="checkbox"]:checked + label:before {
+                        transform: translateX(20px);
+                    }
+                }
+
+                .change-password-btn,
+                .logout-btn,
+                .delete-account-btn {
+                    padding: 10px 20px;
+                    font-size: 1rem;
+                    border-radius: 4px;
+                    text-decoration: none;
+                    border: none;
+                    cursor: pointer;
+                    color: var(--white-color);
+                    background-color: var(--primary-color);
+                    transition: background-color 0.3s ease;
+
+                    &:hover {
+                        background-color: var(--secondary-color); // можно добавить отдельную переменную --primary-hover
+                    }
+
+                    &:focus {
+                        outline: none;
+                    }
+
+                    &.logout-btn {
+                        background-color: var(--primary-color);
+
+                        &:hover {
+                            background-color: var(--secondary-color); // также можно --secondary-hover
+                        }
+                    }
+
+                    &.delete-account-btn {
+                        background-color: var(--error-color);
+                        margin-top: 10px;
+                    }
+                }
+            }
+        }
+    }
+}

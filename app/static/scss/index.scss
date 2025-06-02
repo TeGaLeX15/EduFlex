@@ -1,0 +1,255 @@
+@import "variables";
+@import "responsive";
+@import "_card";
+
+body,
+html {
+  height: 100%;
+  font-family: "Segoe UI", sans-serif;
+  background: var(--background-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+h1 {
+  color: var(--secondary-color);
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+// General Buttons
+.btn {
+  background: var(--primary-color);
+  color: var(--white-color);
+  padding: 10px 15px;
+  border-radius: 5px;
+  display: inline-block;
+  transition: 0.3s;
+
+  &:hover {
+    background: var(--secondary-color);
+  }
+
+  &.full-width {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  &.big {
+    font-size: 1.2rem;
+    padding: 12px 24px;
+    margin-top: 20px;
+  }
+}
+
+.news-section {
+  background-color: var(--background-color);
+  margin-bottom: 40px;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .section-title {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin: 0;
+    }
+
+    .btn.secondary {
+      padding: 0.5rem 1.2rem;
+      background-color: var(--primary-color);
+      color: var(--white-color);
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: var(--secondary-color);
+      }
+    }
+  }
+
+  .section-title {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+  }
+
+  .news-null {
+    text-align: center;
+    font-size: 1.5rem;
+    color: var(--muted-color);
+    margin-top: 10px;
+  }
+
+  .news-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .news-more {
+    margin-top: 30px;
+    text-align: center;
+
+    .btn {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+  }
+
+  .news-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 20px;
+    border-radius: 1rem;
+    background-color: var(--background-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      transform: matrix(1.02, 0, 0, 1.02, 0, 0);
+    }
+
+    .news-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--text-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .news-summary {
+      margin-bottom: 1rem;
+      color: var(--gray-color);
+    }
+
+    .news-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid var(--gray-color);
+
+      .btn-secondary {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: var(--secondary-color);
+        }
+      }
+
+      .news-date {
+        font-size: 0.875rem;
+        color: var(--muted-color);
+      }
+    }
+
+    .news-summary {
+      margin: 1rem 0;
+      color: var(--gray-color);
+      font-size: 1rem;
+    }
+
+    .btn-secondary {
+      align-self: flex-start;
+      padding: 8px 15px;
+      font-size: 0.9rem;
+      background-color: var(--secondary-color);
+      color: var(--white-color);
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: var(--highlight-color);
+      }
+    }
+  }
+}
+
+// Grid Layouts
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+// Sections
+.courses-section {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.banner {
+  background: linear-gradient(135deg, var(--highlight-color), #cc4b65);
+  color: var(--white-color);
+  padding: 40px 20px;
+  text-align: center;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  animation: fadeInUp 0.6s ease;
+}
+
+.development {
+  position: relative;
+  border: 2px dashed --highlight-color; /* Пунктирная обводка */
+  background-color: rgba(255, 255, 255, 0.3); /* Полупрозрачный фон */
+  padding: 20px;
+  border-radius: 8px;
+
+  .development-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+}
+
+.quote {
+  background: var(--primary-color);
+  opacity: 0.6;
+  color: var(--white-color);
+  padding: 30px;
+  border-left: 5px solid var(--secondary-color);
+  font-style: italic;
+  font-size: 1.1rem;
+  margin: 20px 0;
+  animation: fadeInUp 0.5s ease;
+}
+
+// Courses
+.course-list {
+  margin-top: 20px;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}

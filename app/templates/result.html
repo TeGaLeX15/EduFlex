@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Результат теста — EduFlex{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="result-container">
+    <div class="result-card">
+        <h2>Ваш результат</h2>
+        <p class="score">Вы набрали <strong>{{ score }}</strong> из <strong>{{ total }}</strong> баллов</p>
+        <!-- Блок статистики -->
+        <div class="quiz-stats">
+            {% if stats.attempts > 0 %}
+            <p>Вы проходили этот квиз <strong>{{ stats.attempts }}</strong> раз(а).</p>
+            <p>Лучший результат: <strong>{{ stats.best_score }} из {{ total }}</strong></p>
+            {% if stats.last_score is not none %}
+            <p>Последний результат: {{ stats.last_score }} ({{ stats.last_attempt_date.strftime('%d.%m.%Y %H:%M') if
+                stats.last_attempt_date else '' }})</p>
+            {% endif %}
+            <a href="{{ url_for('courses.course_quiz', slug=slug, id=id, restart=1) }}" class="btn btn-warning">Пройти заново</a>
+            {% else %}
+            <p>Вы ещё не проходили этот квиз.</p>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('courses.course_learning', slug=slug) }}" class="btn">Вернуться к модулям</a>
+    </div>
+</div>
+{% endblock %}
+
+

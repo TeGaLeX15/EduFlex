@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Оставить отзыв — EduFlex{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/leave_review.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="review-container">
+    <h1>Поделитесь своим мнением</h1>
+    <p>Нам важно ваше мнение! Пожалуйста, оставьте отзыв о платформе EduFlex.</p>
+
+    <form action="{{ url_for('reviews.submit_review') }}" method="POST" class="review-form" id="reviewForm">
+        <div class="star-rating">
+            {% for i in range(5, 0, -1) %}
+            <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}"
+                {% if rating|int == i %}checked{% endif %}>     
+            <label for="star{{ i }}" title="{{ i }} звёзд"></label>
+            {% endfor %}
+        </div>
+    
+        <textarea name="review_text" id="reviewText" placeholder="Напишите ваш отзыв..." required>{{ review_text or '' }}</textarea>
+        <p id="reviewError" class="error-message">Отзыв должен содержать минимум 25 символов.</p>
+    
+        <button type="submit" class="submit-review-btn" id="submitBtn" disabled>Отправить отзыв</button>
+    </form>    
+</div>
+
+<script src="{{ url_for('static', filename='js/leaveReviewValidation.js') }}"></script>
+{% endblock %}

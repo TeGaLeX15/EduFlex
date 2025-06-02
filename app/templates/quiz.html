@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Прохождение теста — EduFlex{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="test-container">
+  <!-- Прогресс теста -->
+  <div class="test-progress">
+    <p>Вопрос: <span id="question-number">{{ index }}</span> / <span id="total-questions">{{ total }}</span></p>
+    <p>Прогресс: <span id="progress-percent">{{ progress|round }}%</span></p>
+    <div class="progress-bar">
+      <div id="progress" style="width: {{ (progress|round) }}%;"></div>
+    </div>
+  </div>
+
+  <!-- Название квиза -->
+  <h2 id="quiz-title">{{ quiz['title'] }}</h2>
+
+  <!-- Вопрос -->
+  <div class="test-question">
+    <h3 id="question-text">{{ question['text'] }}</h3>
+    <form method="POST" action="{{ url_for('courses.course_quiz', slug=slug, id=id) }}">
+      <div class="answer-options">
+        {% for option in options %}
+        <label><input type="radio" name="answer" value="{{ option }}"> {{ option }}</label><br>
+        {% endfor %}
+      </div>
+      <div class="test-navigation">
+        {% if index == total %}
+        <a class="btn" href="{{ url_for('courses.course_result', slug=slug, id=id) }}" id="finish-btn">Завершить</a>
+        {% else %}
+        <button class="btn" type="submit" id="next-btn">Далее</button>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

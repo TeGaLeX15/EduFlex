@@ -1,0 +1,136 @@
+@import "variables";
+@import "flash";
+
+.review-container {
+    max-width: 700px;
+    margin: 50px auto;
+    background: var(--background-color);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+    font-family: "Segoe UI", sans-serif;
+    color: var(--white-color);
+
+    h1 {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    p {
+        margin-bottom: 30px;
+        color: var(--text-color);
+        font-size: 1.1rem;
+    }
+
+    .review-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        max-width: 600px;
+        margin: 0 auto;
+
+        // Стили для текста в textarea
+        textarea {
+            min-height: 150px;
+            padding: 1.2rem;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            border: 1px solid var(--gray-color);
+            resize: none; // 🔒 запрещаем растягивание
+            background-color: var(--background-color); // Более темный фон для textarea
+            color: var(--text-color); // Темный текст
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+
+            &:focus {
+                color: var(--text-color);
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+            }
+
+            &::placeholder {
+                color: var(--muted-color);
+                font-style: italic;
+            }
+        }
+
+        .star-rating {
+            direction: rtl;
+            display: flex;
+            gap: 0.2rem;
+            justify-content: flex-start;
+        
+            input[type="radio"] {
+                display: none;
+            }
+        
+            label {
+                font-size: 2.5rem;
+                color: var(--muted-color);
+                cursor: pointer;
+                transition: color 0.3s, transform 0.2s ease-in-out;
+        
+                &::before {
+                    content: "★";
+                }
+
+                &:hover {
+                    color: var(--warning-color);
+                    transform: scale(1.2);
+                }
+            }
+        
+            input:checked ~ label,
+            input:checked ~ label ~ label {
+                color: var(--warning-color);
+            }
+        }
+        
+        .submit-review-btn {
+            padding: 1rem 2rem;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        
+            &:hover {
+                background-color: var(--primary-color);
+                transform: scale(1.05);
+            }
+        
+            &:active {
+                transform: scale(1);
+            }
+        
+            /* Отключаем hover и анимацию для заблокированной кнопки */
+            &[disabled] {
+                background-color: var(--muted-color);
+                cursor: not-allowed;
+                transition: none; /* Без анимации */
+            }
+        
+            &[disabled]:hover {
+                background-color: var(--muted-color); /* Не меняем цвет при наведении */
+                transform: none; /* Без анимации при наведении */
+            }
+        }        
+    }
+
+    .error-message {
+        color: var(--error-color);
+        font-size: 0.9rem;
+        display: none;
+    }
+
+    .submit-review-btn[disabled] {
+        background-color: var(--muted-color);
+        cursor: not-allowed;
+    }
+}

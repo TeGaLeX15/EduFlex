@@ -1,0 +1,347 @@
+@import "variables"; // Цвета, тени и пр.
+@import "responsive"; // Миксины для media queries
+
+// ============ Основной контейнер ============
+.profile-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+// ============ Заголовок профиля ============
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+
+    @include media-query("medium") {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    width: 100%; /* Добавляем ширину для лучшего контроля в маленьких экранах */
+
+    @include media-query("medium") {
+        flex-direction: column;
+        width: auto; /* Автоматическая ширина на маленьких экранах */
+    }
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-right: 20px;
+
+    @include media-query("medium") {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column; /* Чтобы элементы выстраивались друг под другом */
+    justify-content: center;
+    width: 100%; /* Делаем ширину 100%, чтобы элементы не сдвигались */
+
+    h1 {
+        font-size: 2rem;
+        margin: 0;
+        color: var(--primary-color);
+
+        @include media-query("small") {
+            font-size: 1.4rem;
+        }
+    }
+
+    p {
+        font-size: 1rem;
+        color: var(--gray-color);
+        margin: 5px 0;
+    }
+
+    form {
+        margin-top: 10px;
+        display: none; /* Изначально форма скрыта */
+
+        textarea {
+            width: 100%;
+            height: 120px; /* Фиксированная высота */
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--highlight-color);
+            font-size: 1rem;
+            resize: none; /* Отключаем возможность растягивания */
+            color: var(--text-color);
+            background-color: var(--background-color);
+            transition: border-color 0.3s ease;
+
+            &:focus {
+                border-color: var(--primary-color); /* Изменяем на primary при фокусе */
+                outline: none; /* Убираем стандартное обрамление */
+            }
+        }
+    }
+
+    .edit-btn,
+    .save-bio-btn {
+        width: 100%; /* Кнопки занимают всю ширину родителя */
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 10px; /* Отступ между кнопками */
+
+        &:hover {
+            background-color: var(--secondary-color);
+        }
+    }
+
+    .buttons-container {
+        display: flex; /* Используем flex для расположения кнопок в одну строку */
+        align-items: center;
+        margin-top: 10px;
+        flex-wrap: wrap; /* Разрешаем кнопкам переноситься на новую строку при необходимости */
+
+        .edit-btn {
+            width: auto; /* Оставляем фиксированную ширину для редактирования */
+        }
+
+        .save-bio-btn {
+            width: auto; /* Оставляем фиксированную ширину для сохранения */
+        }
+    }
+
+    @include media-query("small") {
+        h1, p {
+            text-align: center;
+        }
+
+        .buttons-container {
+            flex-direction: column; /* На маленьких экранах кнопки располагаются вертикально */
+            width: 100%;
+        }
+
+        .edit-btn {
+            width: 100%; /* Кнопка редактирования на мобильных устройствах будет растягиваться на всю ширину */
+        }
+
+        .save-bio-btn {
+            width: 100%; /* Кнопка сохранения будет растягиваться на всю ширину */
+            margin-top: 10px; /* Отступ между кнопками */
+        }
+    }
+
+    @include media-query("medium") {
+        h1, p {
+            text-align: center;
+        }
+
+        .buttons-container {
+            flex-direction: column; /* На планшетах кнопки также будут вертикальными */
+        }
+
+        .edit-btn,
+        .save-bio-btn {
+            width: 100%; /* Кнопки на планшетах растягиваются на всю ширину */
+            margin-top: 10px;
+        }
+    }
+
+    @include media-query("large") {
+        .buttons-container {
+            flex-direction:row; /* На ПК кнопки располагаются в строку */
+        }
+
+        .edit-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+    }
+}
+
+// Скрытие / отображение формы редактирования
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+// Стили для анимации формы
+form.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+form.hide {
+    display: none;
+    animation: fadeOut 0.3s ease;
+}
+
+// ============ Секции ============
+section {
+    margin-bottom: 40px;
+
+    h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: var(--secondary-color);
+    }
+}
+
+.courses-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+
+    .course-card {
+        background-color: var(--background-color);
+        border: 2px solid var(--primary-color);
+        border-radius: 12px;
+        padding: 24px; /* Снижаем отступы для улучшения компоновки */
+        box-shadow: 0 8px 24px var(--shadow-color);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        transition: box-shadow 0.3s ease;
+        position: relative; /* Добавление позиции для дополнительных эффектов */
+
+        &:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--secondary-color);
+        }
+
+        .course-title {
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            color: var(--primary-color);
+            font-weight: bold;
+            text-align: left; /* Выравнивание по левому краю */
+        }
+
+        .course-description {
+            font-size: 1rem;
+            color: var(--dark-gray-color);
+            line-height: 1.6;
+            text-align: left; /* Выравнивание по левому краю */
+        }
+
+        .course-meta {
+            font-size: 0.95rem;
+            color: var(--muted-color);
+            margin-bottom: 20px; /* Добавление отступа между метой и кнопкой */
+            text-align: left; /* Выравнивание по левому краю */
+
+            .rating {
+                font-weight: bold;
+                color: var(--warning-color);
+                font-size: 1.1rem;
+            }
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: inline-block;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            margin-top: auto; /* Позволяет кнопке "приклеиться" к низу карточки */
+            align-self: flex-start; /* Выравнивание кнопки по левому краю */
+            width: 100%; /* Кнопка занимает всю ширину карточки */
+            font-size: 1rem;
+            margin-top: 30px;
+
+            &:hover {
+                background-color: var(--secondary-color);
+            }
+        }
+    }
+
+    @include media-query("medium") {
+        grid-template-columns: 1fr;
+    }
+}
+
+// ============ Достижения ============
+.achievements-list {
+    @extend .courses-list;
+}
+
+.achievement-card {
+    background-color: var(--background-color);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    text-align: center;
+
+    img {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 10px;
+    }
+
+    h3 {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    p {
+        color: var(--gray-color);
+        font-size: 0.95rem;
+    }
+}
+
+// ============ Активность ============
+.activity-list {
+    @extend .courses-list;
+}
+
+.activity-item {
+    background-color: var(--background-color);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+
+    p {
+        margin: 0 0 10px;
+
+        strong {
+            color: var(--primary-color);
+        }
+
+        small {
+            display: block;
+            color: var(--text-color);
+        }
+    }
+}
+
+// ============ Ссылка "все курсы" ============
+.view-all-courses {
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 20px;
+
+    &:hover {
+        text-decoration: underline;
+        color: var(--secondary-color);
+    }
+}

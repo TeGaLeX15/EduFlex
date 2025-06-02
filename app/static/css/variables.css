@@ -1,0 +1,43 @@
+:root {
+  --primary-color: #950740;
+  --secondary-color: #c3073f;
+  --background-color: #ffffff;
+  --white-color: #ffffff;
+  --gray-color: #4e4e50;
+  --dark-gray-color: #333;
+  --highlight-color: #6f2232;
+  --light-gray-color: #eaeaea;
+  --text-color: #1a1a1d;
+  --card-bg-color: #f4f4f4;
+  --error-color: #f44336;
+  --success-color: #4CAF50;
+  --info-color: #2196F3;
+  --warning-color: #FF9800;
+  --muted-color: #888888;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --overlay-color: rgba(0, 0, 0, 0.6);
+  --hover-bg-color: #eee;
+  --active-bg-color: #ddd;
+}
+
+:root.dark-theme {
+  --primary-color: #950740;
+  --secondary-color: #c3073f;
+  --background-color: #1a1a1d;
+  --white-color: #ffffff;
+  --gray-color: #4e4e50;
+  --dark-gray-color: #333;
+  --highlight-color: #6f2232;
+  --light-gray-color: #eaeaea;
+  --text-color: #ffffff;
+  --card-bg-color: #2b2b2e;
+  --error-color: #f44336;
+  --success-color: #4CAF50;
+  --info-color: #2196F3;
+  --warning-color: #FF9800;
+  --muted-color: #888888;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --overlay-color: rgba(0, 0, 0, 0.6);
+  --hover-bg-color: #333;
+  --active-bg-color: #444;
+}

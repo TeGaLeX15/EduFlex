@@ -1,0 +1,451 @@
+:root {
+  --primary-color: #950740;
+  --secondary-color: #c3073f;
+  --background-color: #ffffff;
+  --white-color: #ffffff;
+  --gray-color: #4e4e50;
+  --dark-gray-color: #333;
+  --highlight-color: #6f2232;
+  --light-gray-color: #eaeaea;
+  --text-color: #1a1a1d;
+  --card-bg-color: #f4f4f4;
+  --error-color: #f44336;
+  --success-color: #4CAF50;
+  --info-color: #2196F3;
+  --warning-color: #FF9800;
+  --muted-color: #888888;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --overlay-color: rgba(0, 0, 0, 0.6);
+  --hover-bg-color: #eee;
+  --active-bg-color: #ddd;
+}
+
+:root.dark-theme {
+  --primary-color: #950740;
+  --secondary-color: #c3073f;
+  --background-color: #1a1a1d;
+  --white-color: #ffffff;
+  --gray-color: #4e4e50;
+  --dark-gray-color: #333;
+  --highlight-color: #6f2232;
+  --light-gray-color: #eaeaea;
+  --text-color: #ffffff;
+  --card-bg-color: #2b2b2e;
+  --error-color: #f44336;
+  --success-color: #4CAF50;
+  --info-color: #2196F3;
+  --warning-color: #FF9800;
+  --muted-color: #888888;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --overlay-color: rgba(0, 0, 0, 0.6);
+  --hover-bg-color: #333;
+  --active-bg-color: #444;
+}
+
+.course-detail .container {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+@media (max-width: 768px) {
+  .course-detail .container {
+    padding: 0 15px;
+  }
+}
+.course-detail h1,
+.course-detail h2,
+.course-detail p {
+  text-align: center;
+  margin: 0 auto 1rem;
+  width: 90%;
+}
+.course-detail h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  line-height: 1.4;
+  color: var(--primary-color);
+}
+.course-detail h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--secondary-color);
+}
+.course-detail p {
+  font-size: 1.3rem;
+  line-height: 1.7;
+  color: var(--muted-color);
+  margin-bottom: 2rem;
+}
+.course-detail .lesson-content {
+  width: 80%;
+  max-width: 900px;
+  margin: 0 auto;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+.course-detail .lesson-content p {
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+.course-detail .lesson-content h2,
+.course-detail .lesson-content h3,
+.course-detail .lesson-content h4 {
+  font-size: 1.75rem;
+  margin: 1.5rem 0 1rem;
+  color: var(--secondary-color);
+}
+.course-detail .lesson-content ul {
+  list-style-type: disc;
+  padding-left: 2rem;
+  margin-bottom: 1.5rem;
+}
+.course-detail .lesson-content ul li {
+  font-size: 1rem;
+  color: var(--muted-color);
+  margin-bottom: 0.8rem;
+}
+.course-detail .lesson-content hr {
+  border: 1px solid var(--muted-color);
+  margin: 2rem 0;
+}
+.course-detail .lesson-content blockquote {
+  font-size: 1.2rem;
+  font-style: italic;
+  border-left: 4px solid var(--highlight-color);
+  padding-left: 1.5rem;
+  margin: 1.5rem 0;
+  color: var(--text-color);
+}
+.course-detail .lesson-content pre,
+.course-detail .lesson-content code {
+  font-family: "Courier New", Courier, monospace;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border-radius: 5px;
+}
+.course-detail .lesson-content pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--muted-color);
+  padding: 1rem;
+}
+.course-detail .lesson-content code {
+  padding: 0.2rem 0.5rem;
+}
+.course-detail .lesson-content strong {
+  font-weight: bold;
+  color: var(--primary-color);
+}
+.course-detail .lesson-content em {
+  font-style: italic;
+  color: var(--highlight-color);
+}
+.course-detail .lesson-content .codehilite {
+  background-color: var(--background-color);
+  padding: 0.5rem;
+  border-radius: 5px;
+  color: var(--text-color);
+  overflow-x: auto;
+}
+.course-detail .lesson-content .codehilite .language-python {
+  color: var(--highlight-color);
+}
+.course-detail .lesson-content .ai-help-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+.course-detail .lesson-content .ai-help-btn {
+  padding: 0.6rem 1.2rem;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+.course-detail .lesson-content .ai-help-btn:hover {
+  background-color: var(--secondary-color);
+}
+.course-detail .lesson-content .ai-help-btn:active {
+  background-color: var(--secondary-color);
+  transform: scale(0.98);
+}
+.course-detail .chat-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+.course-detail .chat-modal.active {
+  display: flex;
+}
+.course-detail .chat-modal .chat-box {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  width: 100%;
+  max-width: 500px;
+  height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+@media (max-width: 480px) {
+  .course-detail .chat-modal .chat-box {
+    height: 95vh;
+    max-width: 100%;
+    border-radius: 0.75rem;
+  }
+}
+.course-detail .chat-modal .chat-box .chat-header {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+.course-detail .chat-modal .chat-box .chat-header button {
+  background: none;
+  border: none;
+  color: var(--white-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+}
+.course-detail .chat-modal .chat-box .chat-messages {
+  padding: 1rem;
+  flex-grow: 1;
+  overflow-y: auto;
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.course-detail .chat-modal .chat-box .chat-messages.empty {
+  display: block;
+  padding: 2rem;
+  text-align: center;
+}
+.course-detail .chat-modal .chat-box .chat-messages.empty .empty-message {
+  color: var(--muted-color);
+  font-size: 0.95rem;
+  max-width: 80%;
+  margin: 0 auto;
+}
+.course-detail .chat-modal .chat-box .chat-messages .message {
+  max-width: 80%;
+  padding: 0.6em 1em;
+  border-radius: 1rem;
+  word-break: break-word;
+  line-height: 1.4;
+  position: relative;
+}
+.course-detail .chat-modal .chat-box .chat-messages .message.user {
+  align-self: flex-end;
+  background-color: var(--card-bg-color);
+  color: var(--text-color);
+  border-radius: 1rem 1rem 0.2rem 1rem;
+  text-align: right;
+}
+.course-detail .chat-modal .chat-box .chat-messages .message.bot {
+  align-self: flex-start;
+  background-color: var(--card-bg-color);
+  color: var(--text-color);
+  border-radius: 1rem 1rem 1rem 0.2rem;
+  text-align: left;
+}
+.course-detail .chat-modal .chat-box .chat-input {
+  display: flex;
+  border-top: 1px solid var(--muted-color);
+}
+.course-detail .chat-modal .chat-box .chat-input input {
+  flex-grow: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  font-size: 1rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  outline: none;
+}
+.course-detail .chat-modal .chat-box .chat-input button {
+  padding: 0.75rem 1rem;
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+.course-detail .chat-modal .chat-box .chat-input button:hover {
+  background-color: var(--secondary-color);
+}
+.course-detail .lesson-tasks {
+  max-width: 900px;
+  margin: 0 auto;
+  width: 80%;
+}
+.course-detail .lesson-tasks h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+.course-detail .lesson-tasks ul {
+  list-style: none;
+  padding-left: 0;
+}
+.course-detail .lesson-tasks ul li {
+  font-size: 1rem;
+  color: var(--muted-color);
+  margin-bottom: 0.5rem;
+}
+.course-detail .lesson-tasks .no-tasks {
+  font-size: 1rem;
+  color: var(--warning-color);
+}
+.course-detail .course-quiz {
+  max-width: 900px;
+  margin: 2rem auto;
+  width: 80%;
+  text-align: center;
+}
+.course-detail .course-quiz h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--secondary-color);
+  text-align: center;
+}
+.course-detail .course-quiz ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 auto 1rem;
+}
+.course-detail .course-quiz ul li {
+  margin-bottom: 1rem;
+}
+.course-detail .course-quiz ul li a {
+  font-size: 1.125rem;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+.course-detail .course-quiz ul li a:hover {
+  text-decoration: underline;
+}
+.course-detail .course-quiz p {
+  color: var(--warning-color);
+}
+.course-detail .course-quiz .start-quiz-btn {
+  display: inline-block;
+  padding: 0.6em 1.2em;
+  background-color: var(--primary-color);
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  margin: 1em auto 0;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+.course-detail .course-quiz .start-quiz-btn:hover {
+  background-color: var(--highlight-color);
+}
+.course-detail .modules {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.course-detail .modules .module {
+  width: 100%;
+  max-width: 1100px;
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid var(--muted-color);
+  border-radius: 8px;
+  background-color: var(--background-color);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+.course-detail .modules .module:hover {
+  transform: translateY(-5px);
+}
+.course-detail .modules .module .module-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  background-color: var(--background-color);
+  padding: 10px;
+  border-radius: 4px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  border: none;
+  transition: background-color 0.3s;
+}
+.course-detail .modules .module .module-title:hover {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+}
+.course-detail .modules .module .module-content {
+  display: none;
+  padding-left: 1rem;
+}
+.course-detail .modules .module .lessons {
+  list-style: none;
+  padding-left: 0;
+}
+.course-detail .modules .module .lessons .lesson {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+}
+.course-detail .modules .module .lessons .lesson .lesson-title {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  background-color: var(--background-color);
+  padding: 8px;
+  border-radius: 4px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s;
+}
+.course-detail .modules .module .lessons .lesson .lesson-title:hover {
+  background-color: var(--highlight-color);
+  color: var(--white-color);
+}
+.course-detail .modules .module .lessons .lesson ul.tasks {
+  list-style: none;
+  padding-left: 1rem;
+  margin-top: 0.5rem;
+}
+.course-detail .modules .module .lessons .lesson ul.tasks li {
+  font-size: 1rem;
+  color: var(--muted-color);
+  margin-bottom: 0.5rem;
+}
+.course-detail .modules .module .lessons .lesson .no-tasks {
+  font-size: 1rem;
+  color: var(--warning-color);
+}
+.course-detail .modules .module .no-lessons {
+  font-size: 1.125rem;
+  color: var(--warning-color);
+}

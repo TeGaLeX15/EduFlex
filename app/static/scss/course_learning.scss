@@ -1,0 +1,478 @@
+@import "variables";
+
+.course-detail {
+  .container {
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+
+    @media (max-width: 768px) {
+      padding: 0 15px;
+    }
+  }
+
+  // Общие стили для заголовков и параграфов
+  h1,
+  h2,
+  p {
+    text-align: center;
+    margin: 0 auto 1rem;
+    width: 90%;
+  }
+
+  h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    line-height: 1.4;
+    color: var(--primary-color);
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+  }
+
+  p {
+    font-size: 1.3rem;
+    line-height: 1.7;
+    color: var(--muted-color);
+    margin-bottom: 2rem;
+  }
+
+  .lesson-content {
+    width: 80%;
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--text-color);
+
+    p {
+      margin-bottom: 1.5rem;
+      line-height: 1.8;
+    }
+
+    h2,
+    h3,
+    h4 {
+      font-size: 1.75rem;
+      margin: 1.5rem 0 1rem;
+      color: var(--secondary-color);
+    }
+
+    ul {
+      list-style-type: disc;
+      padding-left: 2rem;
+      margin-bottom: 1.5rem;
+
+      li {
+        font-size: 1rem;
+        color: var(--muted-color);
+        margin-bottom: 0.8rem;
+      }
+    }
+
+    hr {
+      border: 1px solid var(--muted-color);
+      margin: 2rem 0;
+    }
+
+    blockquote {
+      font-size: 1.2rem;
+      font-style: italic;
+      border-left: 4px solid var(--highlight-color);
+      padding-left: 1.5rem;
+      margin: 1.5rem 0;
+      color: var(--text-color);
+    }
+
+    pre,
+    code {
+      font-family: "Courier New", Courier, monospace;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      border-radius: 5px;
+    }
+
+    pre {
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--muted-color);
+      padding: 1rem;
+    }
+
+    code {
+      padding: 0.2rem 0.5rem;
+    }
+
+    strong {
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    em {
+      font-style: italic;
+      color: var(--highlight-color);
+    }
+
+    .codehilite {
+      background-color: var(--background-color);
+      padding: 0.5rem;
+      border-radius: 5px;
+      color: var(--text-color);
+      overflow-x: auto;
+
+      .language-python {
+        color: var(--highlight-color);
+      }
+    }
+
+    // Кнопка AI помощи
+    .ai-help-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 1.5rem 0; // отступ сверху и снизу
+    }
+
+    .ai-help-btn {
+      padding: 0.6rem 1.2rem;
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition:
+        background-color 0.3s ease,
+        transform 0.2s;
+
+      &:hover {
+        background-color: var(--secondary-color);
+      }
+
+      &:active {
+        background-color: var(--secondary-color);
+        transform: scale(0.98);
+      }
+    }
+  }
+
+  .chat-modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+
+    &.active {
+      display: flex;
+    }
+
+    .chat-box {
+      background-color: var(--background-color);
+      color: var(--text-color);
+      width: 100%;
+      max-width: 500px;
+      height: 90vh; // ⚠️ Заменили фиксированную max-height на адаптивную высоту
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
+      @media (max-width: 480px) {
+        height: 95vh;
+        max-width: 100%;
+        border-radius: 0.75rem;
+      }
+
+      .chat-header {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+
+        button {
+          background: none;
+          border: none;
+          color: var(--white-color);
+          font-size: 1.5rem;
+          cursor: pointer;
+          padding: 0;
+        }
+      }
+
+      .chat-messages {
+        padding: 1rem;
+        flex-grow: 1;
+        overflow-y: auto;
+        font-size: 0.95rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+
+        &.empty {
+          display: block;
+          padding: 2rem;
+          text-align: center;
+
+          .empty-message {
+            color: var(--muted-color);
+            font-size: 0.95rem;
+            max-width: 80%;
+            margin: 0 auto;
+          }
+        }
+
+        .message {
+          max-width: 80%;
+          padding: 0.6em 1em;
+          border-radius: 1rem;
+          word-break: break-word;
+          line-height: 1.4;
+          position: relative;
+
+          &.user {
+            align-self: flex-end;
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+            border-radius: 1rem 1rem 0.2rem 1rem;
+            text-align: right;
+          }
+
+          &.bot {
+            align-self: flex-start;
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+            border-radius: 1rem 1rem 1rem 0.2rem;
+            text-align: left;
+          }
+        }
+      }
+
+      .chat-input {
+        display: flex;
+        border-top: 1px solid var(--muted-color);
+
+        input {
+          flex-grow: 1;
+          padding: 0.75rem 1rem;
+          border: none;
+          font-size: 1rem;
+          background-color: var(--background-color);
+          color: var(--text-color);
+          outline: none;
+        }
+
+        button {
+          padding: 0.75rem 1rem;
+          background-color: var(--secondary-color);
+          color: #fff;
+          border: none;
+          cursor: pointer;
+          font-weight: 600;
+          transition: background-color 0.3s ease;
+
+          &:hover {
+            background-color: var(--secondary-color);
+          }
+        }
+      }
+    }
+  }
+
+  .lesson-tasks {
+    max-width: 900px;
+    margin: 0 auto;
+    width: 80%;
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+
+      li {
+        font-size: 1rem;
+        color: var(--muted-color);
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    .no-tasks {
+      font-size: 1rem;
+      color: var(--warning-color);
+    }
+  }
+
+  .course-quiz {
+    max-width: 900px;
+    margin: 2rem auto;
+    width: 80%;
+    text-align: center;
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: var(--secondary-color);
+      text-align: center;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0 auto 1rem;
+
+      li {
+        margin-bottom: 1rem;
+
+        a {
+          font-size: 1.125rem;
+          color: var(--primary-color);
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
+    p {
+      color: var(--warning-color);
+    }
+
+    .start-quiz-btn {
+      display: inline-block;
+      padding: 0.6em 1.2em;
+      background-color: var(--primary-color);
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      margin: 1em auto 0;
+      font-weight: bold;
+      transition: background-color 0.3s;
+      text-align: center;
+
+      &:hover {
+        background-color: var(--highlight-color);
+      }
+    }
+  }
+
+  .modules {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .module {
+      width: 100%;
+      max-width: 1100px;
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid var(--muted-color);
+      border-radius: 8px;
+      background-color: var(--background-color);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+      }
+
+      .module-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        background-color: var(--background-color);
+        padding: 10px;
+        border-radius: 4px;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        margin-bottom: 1rem;
+        border: none;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: var(--primary-color);
+          color: var(--white-color);
+        }
+      }
+
+      .module-content {
+        display: none;
+        padding-left: 1rem;
+      }
+
+      .lessons {
+        list-style: none;
+        padding-left: 0;
+
+        .lesson {
+          margin-bottom: 1rem;
+          font-size: 1.125rem;
+
+          .lesson-title {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            background-color: var(--background-color);
+            padding: 8px;
+            border-radius: 4px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+
+            &:hover {
+              background-color: var(--highlight-color);
+              color: var(--white-color);
+            }
+          }
+
+          ul.tasks {
+            list-style: none;
+            padding-left: 1rem;
+            margin-top: 0.5rem;
+
+            li {
+              font-size: 1rem;
+              color: var(--muted-color);
+              margin-bottom: 0.5rem;
+            }
+          }
+
+          .no-tasks {
+            font-size: 1rem;
+            color: var(--warning-color);
+          }
+        }
+      }
+
+      .no-lessons {
+        font-size: 1.125rem;
+        color: var(--warning-color);
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+from .course import Course
+from .module import Module
+from .lesson import Lesson
+from .task import Task
+from .quiz import Quiz
+from .programming_language import ProgrammingLanguage
+from .user_course import UserCourse
+from .user import User
+from .news import News
+from .interest import Interest
+from .progress import Progress
+from .quiz_attempt import QuizAttempt
+# Добавь другие модели по мере необходимости

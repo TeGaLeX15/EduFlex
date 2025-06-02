@@ -1,0 +1,259 @@
+@charset "UTF-8";
+:root {
+  --primary-color: #950740;
+  --secondary-color: #c3073f;
+  --background-color: #ffffff;
+  --white-color: #ffffff;
+  --gray-color: #4e4e50;
+  --dark-gray-color: #333;
+  --highlight-color: #6f2232;
+  --light-gray-color: #eaeaea;
+  --text-color: #1a1a1d;
+  --card-bg-color: #f4f4f4;
+  --error-color: #f44336;
+  --success-color: #4CAF50;
+  --info-color: #2196F3;
+  --warning-color: #FF9800;
+  --muted-color: #888888;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --overlay-color: rgba(0, 0, 0, 0.6);
+  --hover-bg-color: #eee;
+  --active-bg-color: #ddd;
+}
+
+:root.dark-theme {
+  --primary-color: #950740;
+  --secondary-color: #c3073f;
+  --background-color: #1a1a1d;
+  --white-color: #ffffff;
+  --gray-color: #4e4e50;
+  --dark-gray-color: #333;
+  --highlight-color: #6f2232;
+  --light-gray-color: #eaeaea;
+  --text-color: #ffffff;
+  --card-bg-color: #2b2b2e;
+  --error-color: #f44336;
+  --success-color: #4CAF50;
+  --info-color: #2196F3;
+  --warning-color: #FF9800;
+  --muted-color: #888888;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --overlay-color: rgba(0, 0, 0, 0.6);
+  --hover-bg-color: #333;
+  --active-bg-color: #444;
+}
+
+:root {
+  --primary-color: #950740;
+  --secondary-color: #c3073f;
+  --background-color: #ffffff;
+  --white-color: #ffffff;
+  --gray-color: #4e4e50;
+  --dark-gray-color: #333;
+  --highlight-color: #6f2232;
+  --light-gray-color: #eaeaea;
+  --text-color: #1a1a1d;
+  --card-bg-color: #f4f4f4;
+  --error-color: #f44336;
+  --success-color: #4CAF50;
+  --info-color: #2196F3;
+  --warning-color: #FF9800;
+  --muted-color: #888888;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --overlay-color: rgba(0, 0, 0, 0.6);
+  --hover-bg-color: #eee;
+  --active-bg-color: #ddd;
+}
+
+:root.dark-theme {
+  --primary-color: #950740;
+  --secondary-color: #c3073f;
+  --background-color: #1a1a1d;
+  --white-color: #ffffff;
+  --gray-color: #4e4e50;
+  --dark-gray-color: #333;
+  --highlight-color: #6f2232;
+  --light-gray-color: #eaeaea;
+  --text-color: #ffffff;
+  --card-bg-color: #2b2b2e;
+  --error-color: #f44336;
+  --success-color: #4CAF50;
+  --info-color: #2196F3;
+  --warning-color: #FF9800;
+  --muted-color: #888888;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --overlay-color: rgba(0, 0, 0, 0.6);
+  --hover-bg-color: #333;
+  --active-bg-color: #444;
+}
+
+#flash-toast-container {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 1000;
+}
+
+.flash-toast {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  color: var(--white-color);
+  animation: fadeInOut 4s ease forwards;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  min-width: 250px;
+  opacity: 0; /* Начальная непрозрачность */
+  transform: translateY(-20px); /* Начальное смещение вверх */
+}
+.flash-toast.show {
+  opacity: 1; /* Делаем видимым */
+  transform: translateY(0); /* Возвращаем в исходное положение */
+}
+.flash-toast.success {
+  background-color: var(--success-color);
+}
+.flash-toast.error {
+  background-color: var(--error-color);
+}
+.flash-toast.info {
+  background-color: var(--info-color);
+}
+.flash-toast.warning {
+  background-color: var(--warning-color);
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  10%, 90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+.review-container {
+  max-width: 700px;
+  margin: 50px auto;
+  background: var(--background-color);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+  font-family: "Segoe UI", sans-serif;
+  color: var(--white-color);
+}
+.review-container h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+.review-container p {
+  margin-bottom: 30px;
+  color: var(--text-color);
+  font-size: 1.1rem;
+}
+.review-container .review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.review-container .review-form textarea {
+  min-height: 150px;
+  padding: 1.2rem;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  border: 1px solid var(--gray-color);
+  resize: none;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+.review-container .review-form textarea:focus {
+  color: var(--text-color);
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+.review-container .review-form textarea::-moz-placeholder {
+  color: var(--muted-color);
+  font-style: italic;
+}
+.review-container .review-form textarea::placeholder {
+  color: var(--muted-color);
+  font-style: italic;
+}
+.review-container .review-form .star-rating {
+  direction: rtl;
+  display: flex;
+  gap: 0.2rem;
+  justify-content: flex-start;
+}
+.review-container .review-form .star-rating input[type=radio] {
+  display: none;
+}
+.review-container .review-form .star-rating label {
+  font-size: 2.5rem;
+  color: var(--muted-color);
+  cursor: pointer;
+  transition: color 0.3s, transform 0.2s ease-in-out;
+}
+.review-container .review-form .star-rating label::before {
+  content: "★";
+}
+.review-container .review-form .star-rating label:hover {
+  color: var(--warning-color);
+  transform: scale(1.2);
+}
+.review-container .review-form .star-rating input:checked ~ label,
+.review-container .review-form .star-rating input:checked ~ label ~ label {
+  color: var(--warning-color);
+}
+.review-container .review-form .submit-review-btn {
+  padding: 1rem 2rem;
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  /* Отключаем hover и анимацию для заблокированной кнопки */
+}
+.review-container .review-form .submit-review-btn:hover {
+  background-color: var(--primary-color);
+  transform: scale(1.05);
+}
+.review-container .review-form .submit-review-btn:active {
+  transform: scale(1);
+}
+.review-container .review-form .submit-review-btn[disabled] {
+  background-color: var(--muted-color);
+  cursor: not-allowed;
+  transition: none; /* Без анимации */
+}
+.review-container .review-form .submit-review-btn[disabled]:hover {
+  background-color: var(--muted-color); /* Не меняем цвет при наведении */
+  transform: none; /* Без анимации при наведении */
+}
+.review-container .error-message {
+  color: var(--error-color);
+  font-size: 0.9rem;
+  display: none;
+}
+.review-container .submit-review-btn[disabled] {
+  background-color: var(--muted-color);
+  cursor: not-allowed;
+}

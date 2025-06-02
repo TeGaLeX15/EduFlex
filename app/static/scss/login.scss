@@ -1,0 +1,153 @@
+@import "variables"; // Подключение SCSS-переменных
+
+/* Обнуляем */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Градиентный фон */
+body,
+html {
+  height: 100%;
+  font-family: "Segoe UI", sans-serif;
+  overflow: hidden;
+  color: var(--text-color);
+
+  &::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--background-color);
+    z-index: -1;
+    animation: fadeIn 1s ease;
+  }
+}
+
+/* Обёртка формы */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+  .login-container {
+    background: var(--background-color);
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+
+    .login-form {
+      h2 {
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: var(--secondary-color);
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+
+        label {
+          display: block;
+          font-weight: 500;
+          margin-bottom: 5px;
+        }
+
+        input {
+          width: 100%;
+          padding: 10px;
+          font-size: 14px;
+          border: 1px solid --hover-bg-color;
+          border-radius: 8px;
+          transition: 0.3s;
+
+          &:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+          }
+        }
+      }
+
+      .error-message {
+        color: var(--secondary-color);
+        font-size: 0.875rem;
+        margin-top: 5px;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 12px;
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:disabled {
+          background-color: --hover-bg-color;
+          cursor: not-allowed;
+        }
+
+        &:hover:not(:disabled) {
+          background-color: var(--secondary-color);
+        }
+      }
+
+      .register-link {
+        text-align: center;
+        margin-top: 20px;
+
+        a {
+          color: var(--primary-color);
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: none;
+            color: var(--secondary-color);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Анимации */
+@keyframes slideIn {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0.8;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Мобильная адаптация */
+@media (max-width: 480px) {
+  .login-wrapper {
+    .login-container {
+      margin: 20px;
+      padding: 30px 20px;
+    }
+  }
+}

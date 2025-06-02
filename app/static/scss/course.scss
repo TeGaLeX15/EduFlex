@@ -1,0 +1,124 @@
+@import "variables";
+@import "responsive";
+@import "card";
+
+.course-banner {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  color: var(--white-color);
+  padding: 60px 30px;
+  border-radius: 16px;
+  margin-bottom: 40px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+
+  .course-title {
+    font-size: 3.2rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+
+  .course-description {
+    font-size: 1.4rem;
+    max-width: 800px;
+    margin: 0 auto 20px;
+    line-height: 1.6;
+  }
+
+  .course-meta {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.85);
+
+    p {
+      margin: 5px 0;
+    }
+
+    .rating {
+      color: var(--highlight-color);
+      font-weight: 600;
+    }
+  }
+}
+
+.course-details {
+  background-color: var(--card-bg-color);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 40px;
+
+  h2 {
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+  }
+
+  p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-color);
+  }
+}
+
+.course-actions {
+  text-align: center;
+  margin-bottom: 50px;
+
+  .start-course-btn {
+    display: inline-block;
+    padding: 14px 30px;
+    font-size: 1.2rem;
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: var(--secondary-color);
+    }
+  }
+}
+
+.course-sections {
+  .section-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 30px;
+    list-style: none;
+    padding: 0;
+
+    li a {
+      padding: 10px 20px;
+      background-color: var(--card-bg-color);
+      color: var(--primary-color);
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: var(--hover-bg-color);
+        color: var(--secondary-color);
+      }
+    }
+  }
+
+  .course-section {
+    margin-bottom: 50px;
+
+    h2 {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--text-color);
+    }
+  }
+}

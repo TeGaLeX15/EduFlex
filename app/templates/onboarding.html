@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Добро пожаловать в EduFlex</title>
+  <link rel="stylesheet" href="../static/css/onboarding.css">
+</head>
+<body>
+  <div class="onboarding-container">
+    <div class="slides" id="slides">
+      <!-- Слайд 1 -->
+      <div class="slide">
+        <div class="slide-content">
+          <img src="https://img.icons8.com/color/96/classroom.png" alt="Welcome" />
+          <h1>Добро пожаловать в EduFlex!</h1>
+          <p>Откройте для себя обучение будущего с персонализированными курсами и геймификацией.</p>
+        </div>
+      </div>
+
+      <!-- Слайд 2 -->
+      <div class="slide">
+        <div class="slide-content">
+          <img src="https://img.icons8.com/color/96/classroom.png" alt="Features" />
+          <h1>Учитесь по своим правилам</h1>
+          <p>Гибкий график, доступ с любого устройства и мотивационные задания.</p>
+        </div>
+      </div>
+
+      <!-- Слайд 3: Выбор интересов -->
+      <div class="slide">
+        <div class="slide-content">
+          <h1>Выберите интересующие вас темы</h1>
+          <p>Мы подберем лучшие курсы под ваш вкус</p>
+          <div class="topics-grid" id="topics">
+            <div class="topic-card" data-topic="frontend">
+              <img src="https://img.icons8.com/color/96/source-code.png" />
+              <span>Frontend</span>
+            </div>
+            <div class="topic-card" data-topic="backend">
+              <img src="https://img.icons8.com/color/96/server.png" />
+              <span>Backend</span>
+            </div>
+            <div class="topic-card" data-topic="uiux">
+              <img src="https://img.icons8.com/color/96/design.png" />
+              <span>UI/UX</span>
+            </div>
+            <div class="topic-card" data-topic="datasci">
+              <img src="https://img.icons8.com/color/96/combo-chart.png" />
+              <span>Data Science</span>
+            </div>
+            <div class="topic-card" data-topic="mobile">
+              <img src="https://img.icons8.com/color/96/smartphone.png" />
+              <span>Mobile Development</span>
+            </div>
+            <div class="topic-card" data-topic="ai">
+              <img src="https://img.icons8.com/color/96/artificial-intelligence.png" />
+              <span>AI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Слайд 4 -->
+      <div class="slide">
+        <div class="slide-content">
+          <img src="https://img.icons8.com/color/96/checked--v1.png" />
+          <h1>Вы готовы начать!</h1>
+          <p>Нажмите кнопку ниже, чтобы перейти к обучению.</p>
+          <button class="submit-btn" id="startBtn" disabled>Начать</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Навигация -->
+    <div class="controls">
+      <button id="prevBtn">Назад</button>
+      <button class="skip-btn" id="skipBtn">Пропустить</button>
+      <button id="nextBtn">Далее</button>
+    </div>   
+  </div>
+
+  <!-- Подключение JavaScript -->
+  <script src="../static/js/onboarding.js"></script>
+</body>
+</html>

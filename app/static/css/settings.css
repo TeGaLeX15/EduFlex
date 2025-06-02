@@ -1,0 +1,175 @@
+:root {
+  --primary-color: #950740;
+  --secondary-color: #c3073f;
+  --background-color: #ffffff;
+  --white-color: #ffffff;
+  --gray-color: #4e4e50;
+  --dark-gray-color: #333;
+  --highlight-color: #6f2232;
+  --light-gray-color: #eaeaea;
+  --text-color: #1a1a1d;
+  --card-bg-color: #f4f4f4;
+  --error-color: #f44336;
+  --success-color: #4CAF50;
+  --info-color: #2196F3;
+  --warning-color: #FF9800;
+  --muted-color: #888888;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --overlay-color: rgba(0, 0, 0, 0.6);
+  --hover-bg-color: #eee;
+  --active-bg-color: #ddd;
+}
+
+:root.dark-theme {
+  --primary-color: #950740;
+  --secondary-color: #c3073f;
+  --background-color: #1a1a1d;
+  --white-color: #ffffff;
+  --gray-color: #4e4e50;
+  --dark-gray-color: #333;
+  --highlight-color: #6f2232;
+  --light-gray-color: #eaeaea;
+  --text-color: #ffffff;
+  --card-bg-color: #2b2b2e;
+  --error-color: #f44336;
+  --success-color: #4CAF50;
+  --info-color: #2196F3;
+  --warning-color: #FF9800;
+  --muted-color: #888888;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --overlay-color: rgba(0, 0, 0, 0.6);
+  --hover-bg-color: #333;
+  --active-bg-color: #444;
+}
+
+.settings {
+  background-color: var(--background-color);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.settings .settings-section h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: var(--primary-color);
+}
+.settings .settings-section .settings-options {
+  display: flex;
+  flex-direction: column;
+}
+.settings .settings-section .settings-options .settings-item {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+.settings .settings-section .settings-options .settings-item:not(:last-child) {
+  border-bottom: 1px solid var(--hover-bg-color);
+}
+.settings .settings-section .settings-options .settings-item label {
+  font-weight: bold;
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
+.settings .settings-section .settings-options .settings-item input,
+.settings .settings-section .settings-options .settings-item select {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid var(--gray-color);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: border 0.3s ease;
+}
+.settings .settings-section .settings-options .settings-item input:focus,
+.settings .settings-section .settings-options .settings-item select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+.settings .settings-section .settings-options .settings-item.horizontal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.settings .settings-section .settings-options .settings-item.horizontal label {
+  margin-bottom: 0;
+}
+.settings .settings-section .settings-options .settings-item.horizontal .change-password-btn,
+.settings .settings-section .settings-options .settings-item.horizontal .logout-btn {
+  margin-left: auto;
+}
+.settings .settings-section .settings-options .settings-item .toggle {
+  position: relative;
+  width: 40px;
+  height: 20px;
+}
+.settings .settings-section .settings-options .settings-item .toggle input[type=checkbox] {
+  display: none;
+}
+.settings .settings-section .settings-options .settings-item .toggle input[type=checkbox]:checked + label {
+  background-color: var(--primary-color);
+}
+.settings .settings-section .settings-options .settings-item .toggle label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ccc;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.settings .settings-section .settings-options .settings-item .toggle label:before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: var(--white-color);
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+.settings .settings-section .settings-options .settings-item .toggle input[type=checkbox]:checked + label:before {
+  transform: translateX(20px);
+}
+.settings .settings-section .settings-options .settings-item .change-password-btn,
+.settings .settings-section .settings-options .settings-item .logout-btn,
+.settings .settings-section .settings-options .settings-item .delete-account-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  color: var(--white-color);
+  background-color: var(--primary-color);
+  transition: background-color 0.3s ease;
+}
+.settings .settings-section .settings-options .settings-item .change-password-btn:hover,
+.settings .settings-section .settings-options .settings-item .logout-btn:hover,
+.settings .settings-section .settings-options .settings-item .delete-account-btn:hover {
+  background-color: var(--secondary-color);
+}
+.settings .settings-section .settings-options .settings-item .change-password-btn:focus,
+.settings .settings-section .settings-options .settings-item .logout-btn:focus,
+.settings .settings-section .settings-options .settings-item .delete-account-btn:focus {
+  outline: none;
+}
+.settings .settings-section .settings-options .settings-item .change-password-btn.logout-btn,
+.settings .settings-section .settings-options .settings-item .logout-btn.logout-btn,
+.settings .settings-section .settings-options .settings-item .delete-account-btn.logout-btn {
+  background-color: var(--primary-color);
+}
+.settings .settings-section .settings-options .settings-item .change-password-btn.logout-btn:hover,
+.settings .settings-section .settings-options .settings-item .logout-btn.logout-btn:hover,
+.settings .settings-section .settings-options .settings-item .delete-account-btn.logout-btn:hover {
+  background-color: var(--secondary-color);
+}
+.settings .settings-section .settings-options .settings-item .change-password-btn.delete-account-btn,
+.settings .settings-section .settings-options .settings-item .logout-btn.delete-account-btn,
+.settings .settings-section .settings-options .settings-item .delete-account-btn.delete-account-btn {
+  background-color: var(--error-color);
+  margin-top: 10px;
+}

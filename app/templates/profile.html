@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Профиль пользователя | EduFlex{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+  <!-- Секция профиля -->
+  <div class="profile-header">
+    <div class="profile-info">
+      <img src="https://img.icons8.com/color/96/user-male.png" alt="User Avatar" class="profile-avatar" />
+      <div class="user-details">
+        <h1>{{ user.username }}</h1>
+        <!-- Описание профиля -->
+        <p id="bio-text">{{ user.bio or 'Добавьте описание о себе.' }}</p>
+
+        <!-- Форма редактирования био -->
+        <form id="bio-form" method="POST" action="{{ url_for('profile.update_bio') }}" style="display: none;">
+          <textarea name="bio" rows="4">{{ user.bio }}</textarea>
+          <button type="submit" class="save-bio-btn">Сохранить</button>
+        </form>
+
+        <!-- Кнопка для редактирования -->
+        <button class="edit-btn" onclick="toggleBioEdit()">Редактировать</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Секция с курсами -->
+  <section class="courses-section">
+    <h2>Мои курсы</h2>
+    <div class="courses-list">
+      {% if user.courses %}
+      {% for course in user.courses %}
+      <div class="course-card">
+        <h3>{{ course.title }}</h3>
+        <p>{{ course.description }}</p>
+        <!-- Здесь можно добавить ссылку или кнопку для начала/продолжения курса -->
+        <a href="{{ url_for('courses.course_detail', slug=course.slug) }}" class="btn">Продолжить обучение</a>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p>Вы ещё не начали обучение. Выберите курс в <a href="{{ url_for('courses.courses_main') }}">каталоге</a>.</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Секция достижений -->
+  <section class="achievements-section">
+    <h2>Ваши достижения</h2>
+    <div class="achievements-list">
+      <div class="achievement-card">
+        <img src="https://img.icons8.com/color/96/trophy.png" alt="Achievement">
+        <h3>Завершен курс "Основы Frontend разработки"</h3>
+        <p>Получите сертификат, завершив данный курс.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Секция активности -->
+  <section class="activity-section">
+    <h2>История активности</h2>
+    <div class="activity-list">
+      <div class="activity-item">
+        <p><strong>Вы прошли курс:</strong> Основы Frontend разработки</p>
+        <p><small>Дата: 05 апреля 2025</small></p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function toggleBioEdit() {
+      const form = document.getElementById('bio-form');
+      const text = document.getElementById('bio-text');
+      const isVisible = form.style.display === 'block';
+
+      form.style.display = isVisible ? 'none' : 'block';
+      text.style.display = isVisible ? 'block' : 'none';
+    }
+  </script>
+</div>
+{% endblock %}

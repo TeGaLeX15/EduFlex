@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }} — обучение{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/course_learning.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container course-detail">
+    <h1>{{ course.title }}</h1>
+    <p>{{ course.description }}</p>
+
+    {% if lesson %}
+    <h2>{{ lesson.title }}</h2>
+    <div class="lesson-content">
+        {{ lesson.content | safe }}
+        <div class="ai-help-wrapper">
+            <button class="ai-help-btn" onclick="openChat()">🤖 Задать вопрос по уроку</button>
+        </div>
+    </div>
+
+    <!-- Текст урока без тегов -->
+    <div id="lesson-context" style="display:none;">
+        {{ lesson.content | striptags | truncate(3000) }}
+    </div>
+
+    <!-- Модалка ИИ -->
+    <div id="chat-modal" class="chat-modal">
+        <div class="chat-box">
+            <div class="chat-header">
+                <span>Чат с ИИ</span>
+                <button onclick="closeChat()">×</button>
+            </div>
+            <div id="chat-messages" class="chat-messages empty"></div>
+            <div class="chat-input">
+                <input type="text" id="user-question" placeholder="Задайте вопрос..." />
+                <button onclick="sendQuestion()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="lesson-tasks">
+        <h3>Вопросы для самоизучения:</h3>
+        {% if lesson.tasks %}
+        <ul class="tasks">
+            {% for task in lesson.tasks %}
+            <li>{{ task.position }}. {{ task.text }}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="no-tasks">Заданий пока нет.</p>
+        {% endif %}
+    </div>
+
+    <div class="course-quiz">
+        <h2>Квизы этого урока:</h2>
+        {% if quizzes %}
+        {% if quizzes|length == 1 %}
+        <a class="btn start-quiz-btn" href="{{ url_for('courses.course_quiz', slug=course.slug, id=quizzes[0].id) }}">
+            Пройти квиз по уроку
+        </a>
+        {% else %}
+        <h3>Квизы по уроку:</h3>
+        <ul>
+            {% for quiz in quizzes %}
+            <li>
+                <a href="{{ url_for('courses.course_quiz', slug=course.slug, id=quiz.id) }}">
+                    {{ quiz.title }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% else %}
+        <p>Квизы к этому уроку пока не добавлены.</p>
+        {% endif %}
+    </div>
+    {% else %}
+    <h2>Модули курса:</h2>
+    <div class="modules">
+        {% for module in modules %}
+        <div class="module">
+            <button class="module-title" onclick="toggleVisibility('module-{{ module.id }}')">
+                {{ module.position }}. {{ module.title }}
+            </button>
+
+            <div class="module-content" id="module-{{ module.id }}">
+                {% if module.lessons %}
+                <ul class="lessons">
+                    {% for lesson in module.lessons %}
+                    <li class="lesson">
+                        <a href="{{ url_for('courses.course_learning', slug=course.slug, lesson_id=lesson.id) }}">
+                            <strong>{{ lesson.position }}. {{ lesson.title }}</strong>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="no-lessons">Уроки ещё не добавлены.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleVisibility(id) {
+        var element = document.getElementById(id);
+        if (element.style.display === "none" || element.style.display === "") {
+            element.style.display = "block";
+        } else {
+            element.style.display = "none";
+        }
+    }
+</script>
+<script src="{{ url_for('static', filename='js/aiChatResponse.js') }}"></script>
+{% endblock %}

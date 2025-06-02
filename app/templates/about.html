@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block title %}О проекте — EduFlex{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="about-section">
+    <div class="container">
+        <h1 class="about-title">О платформе EduFlex</h1>
+        <p class="about-subtitle">Инновационная образовательная платформа для будущего</p>
+
+        <div class="about-grid">
+            <div class="about-text">
+                <p>EduFlex — это современная образовательная среда, объединяющая студентов, преподавателей и курсы в
+                    одном месте. Мы предлагаем качественные материалы, интерактивные тесты и персонализированный подход
+                    к обучению.</p>
+
+                <p>Наша цель — сделать образование доступным, интересным и эффективным. Мы разрабатываем адаптивные
+                    курсы с упором на практику, чтобы каждый пользователь мог развиваться в удобном темпе.</p>
+
+                <ul class="features-list">
+                    <li>📅 Гибкое расписание обучения</li>
+                    <li>🧠 Онлайн тестирование и отслеживание прогресса</li>
+                    <li>🎯 Интерактивные элементы и геймификация</li>
+                    <li>💻 Простая и современная платформа</li>
+                </ul>
+            </div>
+
+            <div class="about-image">
+                <img src="{{ url_for('static', filename='images/about-illustration.png') }}" alt="Образование" />
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <section class="why-section">
+            <h2 class="why-section-title">Почему выбирают EduFlex?</h2>
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="why-icon">🎓</div>
+                    <h3 class="why-title">100+ курсов</h3>
+                    <p class="why-desc">Курсы от опытных экспертов и преподавателей.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon">🚀</div>
+                    <h3 class="why-title">Практика</h3>
+                    <p class="why-desc">Реальные проекты и задачи на каждом этапе.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon">💼</div>
+                    <h3 class="why-title">Трудоустройство</h3>
+                    <p class="why-desc">Помощь в поиске работы и карьерный трек.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon">🧠</div>
+                    <h3 class="why-title">Гибкость</h3>
+                    <p class="why-desc">Учитесь в удобное время и в собственном темпе.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- Блок с отзывами студентов -->
+        <div class="testimonial-section">
+            <h2>Отзывы наших студентов</h2>
+            <div class="testimonial-grid">
+                {% for review in platform_reviews %}
+                <div class="testimonial-card {% if review.user_id == current_user.id %}my-review{% endif %}" data-review-id="{{ review.id }}">
+                    <div class="testimonial-content">
+                        <p>«{{ review.content }}»</p>
+                        <div class="stars-date">
+                            <div class="stars">
+                                {% for i in range(1, 6) %}
+                                {% if review.rating >= i %}
+                                <span class="star full">★</span>
+                                {% elif review.rating >= i - 0.5 %}
+                                <span class="star half">★</span>
+                                {% else %}
+                                <span class="star empty">★</span>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="date">
+                                {{ review.created_at.strftime('%d.%m.%Y') }}
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="testimonial-overlay">
+                        {% if review.user_id == current_user.id %}
+                            <span class="my-review">Это мой отзыв</span>
+                        {% else %}
+                            <span class="username" onclick="window.location.href='/user/{{ review.user.id }}'">{{ review.user.username }}</span>
+                            <div class="like-dislike">
+                                <!-- Кнопки для голосования с атрибутами для обработки с помощью AJAX -->
+                                <button class="like-btn {% if review.user_id == current_user.id %}disabled{% endif %}" data-review-id="{{ review.id }}" data-vote-type="like">👍 {{ review.likes_count }}</button>
+                                <button class="dislike-btn {% if review.user_id == current_user.id %}disabled{% endif %}" data-review-id="{{ review.id }}" data-vote-type="dislike">👎 {{ review.dislikes_count }}</button>
+                            </div>
+                        {% endif %}
+                    </div>                    
+                </div>                
+                {% else %}
+                <p>Пока нет отзывов. Будьте первым!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- Блок с "Как начать обучение?" -->
+        <div class="how-it-works">
+            <h2>Как начать обучение?</h2>
+            <div class="steps">
+                <div class="step-nav">
+                    <button class="step-btn active" data-step="1">
+                        <span class="step-icon">📥</span> 1
+                    </button>
+                    <button class="step-btn" data-step="2">
+                        <span class="step-icon">📚</span> 2
+                    </button>
+                    <button class="step-btn" data-step="3">
+                        <span class="step-icon">💻</span> 3
+                    </button>
+                    <button class="step-btn" data-step="4">
+                        <span class="step-icon">🎓</span> 4
+                    </button>
+                </div>
+                <div class="step-content">
+                    <div class="step-text active" data-step="1">
+                        <h3>Создайте аккаунт</h3>
+                        <p>Пройдите простую регистрацию, чтобы получить доступ ко всем возможностям.</p>
+                    </div>
+                    <div class="step-text" data-step="2">
+                        <h3>Выберите курс</h3>
+                        <p>Найдите подходящий курс по интересам и уровню подготовки.</p>
+                    </div>
+                    <div class="step-text" data-step="3">
+                        <h3>Проходите обучение</h3>
+                        <p>Смотрите уроки, выполняйте задания и проходите тесты.</p>
+                    </div>
+                    <div class="step-text" data-step="4">
+                        <h3>Получайте сертификаты</h3>
+                        <p>Завершайте курсы и получайте именные сертификаты.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- Сравнение до и после -->
+        <table class="compare-table">
+            <tr>
+                <th>До EduFlex</th>
+                <th>С EduFlex</th>
+            </tr>
+            <tr>
+                <td>Скучные лекции</td>
+                <td>Интерактивные модули</td>
+            </tr>
+            <tr>
+                <td>Сложный интерфейс</td>
+                <td>Простой и стильный дизайн</td>
+            </tr>
+            <tr>
+                <td>Нет прогресса</td>
+                <td>Отслеживание и геймификация</td>
+            </tr>
+        </table>
+
+        <hr class="section-divider">
+
+        <!-- Блок с бенефитами -->
+        <div class="about-benefits">
+            <div class="benefit-card">
+                <h3>{{ student_count }}</h3>
+                <p>Зарегистрированных пользователей</p>
+            </div>
+            <div class="benefit-card">
+                <h3>{{ course_count }}</h3>
+                <p>Курсов на платформе</p>
+            </div>
+            <div class="benefit-card">
+                <h3>{{ review_count }}</h3>
+                <p>Отзывов о платформе</p>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- Кнопка и манящий блок внизу -->
+        <div class="cta-section">
+            <div class="cta-block">
+                <h3>Готовы начать обучение?</h3>
+                <p>Присоединяйтесь к тысячам студентов и начните свой путь к успеху с EduFlex!</p>
+            </div>
+            <div class="cta-btn-container">
+                <a href="{{ url_for('courses.courses_main') }}" class="btn-primary">Начать обучение</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/aboutHowItWorks.js') }}"></script>
+<script src="{{ url_for('static', filename='js/reviewVote.js') }}"></script>
+{% endblock %}

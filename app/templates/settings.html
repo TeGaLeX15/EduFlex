@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Настройки | EduFlex{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container settings">
+    <section class="settings-section">
+        <h2>Настройки аккаунта</h2>
+        <div class="settings-options">
+
+            <!-- Электронная почта -->
+            <div class="settings-item">
+                <label for="email">Электронная почта</label>
+                <input type="email" id="email" value="{{ current_user.email }}" disabled>
+            </div>
+
+            <!-- Имя пользователя -->
+            <div class="settings-item">
+                <label for="username">Имя пользователя</label>
+                <input type="text" id="username" value="{{ current_user.username }}" disabled>
+            </div>
+
+            <!-- Уведомления
+            <div class="settings-item horizontal">
+                <label for="notifications">Уведомления</label>
+                <div class="toggle">
+                <input type="checkbox" id="notifications" {% if current_user.notifications %}checked{% endif %}>
+                <label for="notifications"></label>
+                </div>
+            </div>
+            -->
+
+            <!-- Пароль -->
+            <div class="settings-item horizontal">
+                <label for="password">Пароль</label>
+                <a href="{{ url_for('auth.change_password') }}" class="change-password-btn">Изменить пароль</a>
+            </div>
+
+            <!-- Язык интерфейса -->
+            <div class="settings-item">
+                <label for="language">Язык интерфейса</label>
+                <select id="language">
+                    <option value="ru" {% if current_user.language=='ru' %}selected{% endif %}>Русский</option>
+                    <option value="en" {% if current_user.language=='en' %}selected{% endif %}>English</option>
+                </select>
+            </div>
+
+            <!-- Выход из аккаунта -->
+            <div class="settings-item horizontal">
+                <label>Выход из аккаунта</label>
+                <form action="{{ url_for('auth.logout') }}" method="POST">
+                    <button type="submit" class="logout-btn">Выйти</button>
+                </form>
+            </div>
+
+            <!-- Удаление аккаунта -->
+            <div class="settings-item">
+                <form method="POST" action="{{ url_for('auth.delete_account') }}"
+                    onsubmit="return confirm('Вы уверены, что хотите удалить аккаунт? Это действие необратимо.');">
+                    <button type="submit" class="delete-account-btn">Удалить аккаунт</button>
+                </form>
+            </div>
+
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Профиль пользователя | EduFlex{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<section class="news-section">
+		<div class="container">
+			<div class="section-header">
+				<h2 class="section-title">Новости платформы</h2>
+				<a href="{{ url_for('news.all') }}" class="btn secondary">Смотреть все новости</a>
+			</div>
+			<div class="news-list">
+				{% for news in news_items %}
+				<div class="news-card">
+					<h3 class="news-title">{{ news.title }}</h3>
+					<p class="news-summary">{{ news.summary }}</p>
+					<div class="news-footer">
+						<a href="{{ url_for('news.detail', news_id=news.id) }}" class="btn-secondary">Читать далее</a>
+						<span class="news-date">{{ news.date.strftime('%d.%m.%Y') }}</span>
+					</div>
+				</div>
+				{% else %}
+				<p class="news-null">Пока нет новостей. Следите за обновлениями!</p>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+
+	<section class="banner">
+		<h2>Учись. Развивайся. Побеждай.</h2>
+		<p>Твои знания — твоя сила. Начни уже сегодня.</p>
+		<a href="#" class="btn big">Начать обучение</a>
+	</section>
+
+	{% if current_user.is_authenticated %}
+	<section class="grid widgets">
+		<div class="widget development">
+			<h3>Рекомендуемое</h3>
+			<p>Мы подобрали курсы на основе ваших интересов: Python, Web, Flutter.</p>
+			<div class="development-message">В разработке</div>
+		</div>
+		<div class="widget development">
+			<h3>Ваш прогресс</h3>
+			<p>Курсы завершены: 3/10</p>
+			<div class="development-message">В разработке</div>
+		</div>
+	</section>
+	{% endif %}
+
+	<section class="courses-section">
+		<h2>Популярные курсы</h2>
+		<div class="course-list">
+			{% for course in courses %}
+			<div class="course-card">
+				<div class="card-content">
+					<h3>{{ course.title }}</h3>
+					<p>{{ course.description }}</p>
+					<p><strong>Преподаватель:</strong> {{ course.teacher }}</p>
+					<div class="rating">⭐ {{ course.rating }} ({{ course.reviews }} отзывов)</div>
+				</div>
+				<a href="{{ url_for('courses.course_detail', slug=course.slug) }}" class="btn full-width">Подробнее</a>
+			</div>
+			{% endfor %}
+		</div>
+	</section>
+
+	<section class="quote">
+		<blockquote>
+			«{{ quote.text }}»<br>
+			— {{ quote.author }}
+		</blockquote>
+	</section>
+</div>
+{% endblock %}

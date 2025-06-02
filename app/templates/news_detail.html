@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}{{ news_item.title }} | EduFlex{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/news_detail.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="news-detail">
+  <div class="container">
+    <h1 class="news-title">{{ news_item.title }}</h1>
+    <p class="news-date">{{ news_item.date.strftime('%d.%m.%Y') }}</p>
+    <div class="news-body">
+      {{ news_item.summary | safe }} <br><br>
+      {{ news_item.content | safe }}
+    </div>
+  </div>
+</section>
+{% endblock %}

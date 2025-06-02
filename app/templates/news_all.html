@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Все новости | EduFlex{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/news_all.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="news-section">
+  <div class="container">
+    <h2 class="section-title">Все новости</h2>
+    <div class="news-list">
+      {% for news in news_items %}
+      <div class="news-card">
+        <div class="news-header">
+          <h3 class="news-title">{{ news.title }}</h3>
+          <span class="news-date">{{ news.date.strftime('%d.%m.%Y') }}</span>
+        </div>
+        
+        <!-- Описание новости -->
+        <p class="news-summary">{{ news.summary }}</p>
+        
+        <!-- Показать ссылку на полную новость, если описание слишком короткое -->
+        {% if news.summary|length > 100 %}
+        <p class="news-full-summary">
+          {{ news.full_summary }}
+        </p>
+        {% endif %}
+        
+        <a href="{{ url_for('news.detail', news_id=news.id) }}" class="btn-secondary">Читать далее</a>
+      </div>
+      {% else %}
+      <p class="news-null">Пока нет новостей.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
