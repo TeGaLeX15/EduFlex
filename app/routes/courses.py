@@ -13,6 +13,11 @@ import re
 import markdown
 import ollama
 import html
+import logging
+from datetime import timedelta
+
+logging.basicConfig(level=logging.DEBUG)  # или INFO в проде
+logger = logging.getLogger(__name__)
 
 courses_bp = Blueprint("courses", __name__)
 
@@ -135,90 +140,155 @@ def course_learning_detail(slug, lesson_id):
 @courses_bp.route('/course/<slug>/quiz/<int:id>', methods=['GET', 'POST'])
 @login_required
 def course_quiz(slug, id):
+    logger.debug(f"➡️ Вход в course_quiz: slug={slug}, id={id}, method={request.method}")
+
     course = Course.query.filter_by(slug=slug).first()
     if not course:
         flash('Курс не найден', 'error')
         return redirect(url_for('courses.courses_main'))
 
-    quiz = Quiz.query.filter_by(id=id).first()
-    if not quiz or not quiz.lesson or not quiz.lesson.module or quiz.lesson.module.course.id != course.id:
+    quiz = Quiz.query.get(id)
+    if not quiz or not quiz.lesson or not quiz.lesson.module or quiz.lesson.module.course_id != course.id:
         flash('Квиз не найден', 'error')
         return redirect(url_for('courses.courses_main'))
 
-    # Проверяем, есть ли уже попытки прохождения этого теста у пользователя
-    progress = Progress.query.filter_by(user_id=current_user.id, course_id=course.id).first()
-    has_attempts = False
-    if progress:
-        attempt = QuizAttempt.query.filter_by(progress_id=progress.id, quiz_id=quiz.id).first()
-        has_attempts = attempt is not None
-
-    # Если есть попытки и не запрошен рестарт - перенаправляем на результаты
-    if has_attempts and not request.args.get('restart'):
-        return redirect(url_for('courses.course_result', slug=slug, id=id))
-
+    # Сессионные ключи
     session_key = f'{slug}_{id}_q_index'
     score_key = f'{slug}_{id}_score'
     attempt_recorded_key = f'{slug}_{id}_attempt_recorded'
+    current_attempt_id_key = f'{slug}_{id}_current_attempt_id'
 
-    # Если запрошен рестарт — сбрасываем прогресс в сессии
     if request.args.get('restart'):
-        session[session_key] = 0
+        logger.info(f"🔄 Рестарт квиза. Очистка сессии")
+        session.pop(session_key, None)
         session.pop(score_key, None)
         session.pop(attempt_recorded_key, None)
-
-    # Инициализация индекса вопроса, если нет
-    if session_key not in session:
-        session[session_key] = 0
-
-    questions = quiz.questions  # список вопросов
-
-    # Если вопросов нет — сразу редирект на результат
-    if not questions:
-        flash('В этом квизе нет вопросов', 'error')
-        return redirect(url_for('courses.course_result', slug=slug, id=id))
-
-    # Обработка ответа пользователя
-    if request.method == 'POST':
-        q_index = session.get(session_key, 0)
-        answer = request.form.get('answer')
-        correct = questions[q_index].answer
-
-        if answer == correct:
-            session[score_key] = session.get(score_key, 0) + 1
-
-        # Переходим к следующему вопросу
-        session[session_key] = q_index + 1
-
-        # Если вопросы закончились — записываем результат и идём на страницу результата
-        if session[session_key] >= len(questions):
-            if not session.get(attempt_recorded_key):
-                if not progress:
-                    progress = Progress(user_id=current_user.id, course_id=course.id)
-                    db.session.add(progress)
-                    db.session.commit()
-                attempt = QuizAttempt(progress_id=progress.id, quiz_id=quiz.id, score=session.get(score_key, 0))
-                db.session.add(attempt)
-                db.session.commit()
-                session[attempt_recorded_key] = True
-
-            return redirect(url_for('courses.course_result', slug=slug, id=id))
-
-        # Иначе — следующий вопрос
+        session.pop(current_attempt_id_key, None)
+        session['restart_quiz'] = True
         return redirect(url_for('courses.course_quiz', slug=slug, id=id))
 
-    # Отображение вопроса: если индекс за пределами — показываем результат
-    q_index = session.get(session_key, 0)
-    if q_index >= len(questions):
-        return redirect(url_for('courses.course_result', slug=slug, id=id))
+    referer = request.headers.get('Referer', '')
+    if not request.args.get('restart'):
+        existing_attempt = QuizAttempt.query.filter_by(user_id=current_user.id, quiz_id=quiz.id).order_by(QuizAttempt.id.desc()).first()
+        if existing_attempt and 'lesson' in referer:
+            logger.info(f"✅ Есть предыдущая попытка по этому квизу. Перенаправляем на результат.")
+            return redirect(url_for('courses.course_result', slug=slug, id=id))
 
+    return quiz_page(course, quiz, session_key, score_key, attempt_recorded_key, current_attempt_id_key)
+
+def quiz_page(course, quiz, session_key, score_key, attempt_recorded_key, current_attempt_id_key):
+    logger.debug(f"➡️ Вход в quiz_page")
+
+    questions = list(quiz.questions)
+    if not questions:
+        flash('В этом квизе нет вопросов', 'error')
+        return redirect(url_for('courses.course_result', slug=course.slug, id=quiz.id))
+
+    # Инициализация сессионных значений, если их нет
+    session.setdefault(session_key, 0)
+    session.setdefault(score_key, 0)
+    session.setdefault(attempt_recorded_key, False)
+
+    q_index = session[session_key]
+
+    # При рестарте просто сбрасываем сессионные переменные
+    if session.pop('restart_quiz', False):
+        logger.info("🔄 Рестарт квиза, сброс сессии")
+        session[session_key] = 0
+        session[score_key] = 0
+        session[attempt_recorded_key] = False
+        session.pop(current_attempt_id_key, None)
+        q_index = 0  # Обновляем локальную переменную, чтобы не было конфликтов
+
+    if request.method == 'POST':
+        answer = request.form.get('answer')
+        correct_answer = questions[q_index].answer
+
+        # Создаём новую попытку при первом ответе (если ещё не создана)
+        attempt_id = session.get(current_attempt_id_key)
+        if not attempt_id:
+            attempt = QuizAttempt(user_id=current_user.id, quiz_id=quiz.id, score=0)
+            db.session.add(attempt)
+            db.session.commit()
+            session[current_attempt_id_key] = attempt.id
+            logger.info(f"🆕 Создана новая попытка: id={attempt.id}")
+
+        if answer == correct_answer:
+            session[score_key] += 1
+            logger.info(f"🎉 Верно. Очки: {session[score_key]}")
+        else:
+            logger.info("❌ Неверно")
+
+        session[session_key] += 1
+        q_index = session[session_key]  # обновляем для проверки дальше
+
+        # Если вопросы закончились, сохраняем результат
+        if q_index >= len(questions):
+            final_score = session.get(score_key, 0)
+            attempt = db.session.get(QuizAttempt, session[current_attempt_id_key])
+            if attempt:
+                attempt.score = final_score
+                db.session.commit()
+                logger.info(f"📝 Попытка сохранена в момент завершения POST: id={attempt.id}, score={final_score}")
+            session[attempt_recorded_key] = True
+            return redirect(url_for('courses.course_result', slug=course.slug, id=quiz.id))
+
+        # Иначе переходим к следующему вопросу
+        return redirect(url_for('courses.course_quiz', slug=course.slug, id=quiz.id))
+
+    # Обработка GET-запроса
+
+    # Если все вопросы пройдены
+    if q_index >= len(questions):
+        logger.info("🏁 Квиз завершён (GET)")
+
+        # Если попытка уже сохранена, просто завершаем
+        if session.get(attempt_recorded_key):
+            logger.info("🔁 Попытка уже была записана ранее, просто завершаем")
+
+        else:
+            final_score = session.get(score_key, 0)
+            try:
+                attempt_id = session.get(current_attempt_id_key)
+                if attempt_id:
+                    attempt = db.session.get(QuizAttempt, attempt_id)
+                    if attempt:
+                        attempt.score = final_score
+                        db.session.commit()
+                        logger.info(f"📝 Попытка обновлена (GET): id={attempt.id}, score={final_score}")
+                else:
+                    logger.warning("⚠️ Не найден ID текущей попытки — создаём заново")
+                    attempt = QuizAttempt(user_id=current_user.id, quiz_id=quiz.id, score=final_score)
+                    db.session.add(attempt)
+                    db.session.commit()
+                    logger.info(f"🆕 Попытка создана (GET): id={attempt.id}, score={final_score}")
+            except Exception as e:
+                db.session.rollback()
+                logger.error(f"❌ Ошибка при сохранении попытки: {e}")
+                flash(f'Ошибка при сохранении попытки: {e}', 'error')
+
+            session[attempt_recorded_key] = True
+
+        # Очистка сессии после завершения
+        session.pop(session_key, None)
+        session.pop(score_key, None)
+        session.pop(current_attempt_id_key, None)
+
+        return redirect(url_for('courses.course_result', slug=course.slug, id=quiz.id))
+
+    # Если тест не завершён — показываем следующий вопрос
     question = questions[q_index]
     options = [opt.strip() for opt in re.split(r',\s*', question.options)]
 
-    return render_template('quiz.html', quiz=quiz, question=question,
-                         options=options,
-                         index=q_index, total=len(questions),
-                         progress=(q_index / len(questions)) * 100,
-                         slug=slug, id=id)
+    return render_template('quiz.html',
+                           quiz=quiz,
+                           question=question,
+                           options=options,
+                           index=q_index + 1,
+                           total=len(questions),
+                           progress=(q_index / len(questions)) * 100,
+                           slug=course.slug,
+                           id=quiz.id)
 
 @courses_bp.route('/course/<slug>/quiz/<int:id>/result', methods=['GET'])
 @login_required
@@ -228,7 +298,7 @@ def course_result(slug, id):
         flash('Курс не найден', 'error')
         return redirect(url_for('courses.courses_main'))
 
-    quiz = Quiz.query.filter_by(id=id).first()
+    quiz = Quiz.query.get(id)
     if not quiz:
         flash('Квиз не найден', 'error')
         return 'Квиз не найден', 404
@@ -236,13 +306,13 @@ def course_result(slug, id):
     score = session.get(f'{slug}_{id}_score', 0)
     total = len(quiz.questions)
 
-    progress = Progress.query.filter_by(user_id=current_user.id, course_id=course.id).first()
+    last_attempt = QuizAttempt.query.filter_by(user_id=current_user.id, quiz_id=quiz.id).order_by(QuizAttempt.id.desc()).first()
 
-    stats = progress.get_quiz_stats(quiz.id) if progress else {
-        "attempts": 0,
-        "best_score": 0,
-        "last_score": None,
-        "last_attempt_date": None
+    stats = {
+        "attempts": QuizAttempt.query.filter_by(user_id=current_user.id, quiz_id=quiz.id).count(),
+        "best_score": db.session.query(db.func.max(QuizAttempt.score)).filter_by(user_id=current_user.id, quiz_id=quiz.id).scalar() or 0,
+        "last_score": last_attempt.score if last_attempt else None,
+        "last_attempt_date": last_attempt.attempt_date + timedelta(hours=5) if last_attempt else None  # исправлено поле
     }
 
     return render_template('result.html', score=score, total=total, slug=slug, id=id, stats=stats)

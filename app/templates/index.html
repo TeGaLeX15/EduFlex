@@ -33,7 +33,7 @@
 	<section class="banner">
 		<h2>Учись. Развивайся. Побеждай.</h2>
 		<p>Твои знания — твоя сила. Начни уже сегодня.</p>
-		<a href="#" class="btn big">Начать обучение</a>
+		<a href="{{ url_for('courses.courses_main') }}" class="btn big">Начать обучение</a>
 	</section>
 
 	{% if current_user.is_authenticated %}

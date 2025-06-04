@@ -25,15 +25,18 @@
     <form method="POST" action="{{ url_for('courses.course_quiz', slug=slug, id=id) }}">
       <div class="answer-options">
         {% for option in options %}
-        <label><input type="radio" name="answer" value="{{ option }}"> {{ option }}</label><br>
+        <div class="answer-option">
+          <label>
+            <input type="radio" name="answer" value="{{ option }}" required>
+            {{ option }}
+          </label>
+        </div>
         {% endfor %}
       </div>
       <div class="test-navigation">
-        {% if index == total %}
-        <a class="btn" href="{{ url_for('courses.course_result', slug=slug, id=id) }}" id="finish-btn">Завершить</a>
-        {% else %}
-        <button class="btn" type="submit" id="next-btn">Далее</button>
-        {% endif %}
+        <button class="btn" type="submit" id="{{ 'finish-btn' if index == total else 'next-btn' }}">
+          {{ 'Завершить' if index == total else 'Далее' }}
+        </button>
       </div>
     </form>
   </div>
