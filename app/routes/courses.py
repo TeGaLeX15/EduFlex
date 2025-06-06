@@ -1,20 +1,23 @@
 import subprocess
 from app.models.interest import Interest
 from app.models.lesson import Lesson
+from app.models.programming_language import ProgrammingLanguage
 from app.models.review_vote import ReviewVote
 from app.models.user import User
 from app.models.platform_review import PlatformReview
 from app.models.lesson_progress import LessonProgress
-from flask import Flask, render_template, request, redirect, url_for, session, flash, Blueprint, jsonify, Response, stream_with_context
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Blueprint, jsonify, Response, stream_with_context, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from app.database import db
-from app.models import Course, Quiz, Progress, QuizAttempt
+from app.models import Course, Quiz, Progress, QuizAttempt, Module
 import re
 import markdown
 import ollama
 import html
 import logging
 from datetime import timedelta
+from ..data.decorators import role_required
+from slugify import slugify
 
 logging.basicConfig(level=logging.DEBUG)  # или INFO в проде
 logger = logging.getLogger(__name__)
@@ -236,8 +239,6 @@ def quiz_page(course, quiz, session_key, score_key, attempt_recorded_key, curren
         # Иначе переходим к следующему вопросу
         return redirect(url_for('courses.course_quiz', slug=course.slug, id=quiz.id))
 
-    # Обработка GET-запроса
-
     # Если все вопросы пройдены
     if q_index >= len(questions):
         logger.info("🏁 Квиз завершён (GET)")
@@ -451,3 +452,95 @@ def chat_ai():
             yield f"data: [Ошибка сервера] {str(e)}\n\n"
 
     return Response(stream_with_context(generate()), mimetype="text/event-stream")
+
+@courses_bp.route("/course/create/step1", methods=["GET", "POST"])
+@login_required
+@role_required('teacher')
+def course_create_step1():
+    languages = ProgrammingLanguage.query.all()
+    interests = Interest.query.order_by(Interest.id).all()
+
+    if request.method == "POST":
+        title = request.form["title"]
+        description = request.form["description"]
+        interest_id = request.form["interest_id"]
+
+        # Безопасно получить language_id, может быть пустым
+        language_id = request.form.get("language_id")
+        if not language_id:
+            language_id = None
+        else:
+            language_id = int(language_id)
+
+        slug = slugify(title)
+
+        if Course.query.filter_by(slug=slug).first():
+            flash("Курс с таким названием уже существует", "danger")
+            return redirect(url_for("courses.course_create_step1"))
+
+        new_course = Course(
+            title=title,
+            description=description,
+            teacher=current_user.username,
+            slug=slug,
+            language_id=language_id
+        )
+
+        db.session.add(new_course)
+        db.session.commit()
+
+        # Добавляем связь с категорией (interest)
+        interest = Interest.query.get(interest_id)
+        if interest:
+            new_course.associated_interests.append(interest)
+            db.session.commit()
+
+        flash("Шаг 1 завершён. Теперь добавьте модули и уроки.", "success")
+        return redirect(url_for("courses.course_create_edit", course_id=new_course.id))
+
+    return render_template("course_create_step1.html", languages=languages, interests=interests)
+
+@courses_bp.route('/course/create/<int:course_id>/edit', methods=['GET', 'POST'])
+@login_required
+@role_required('teacher')
+def course_create_edit(course_id):
+    course = Course.query.get_or_404(course_id)
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'add_module':
+            title = request.form.get('module_title')
+            position = request.form.get('module_position', type=int) or 0
+            if title:
+                module = Module(course_id=course.id, title=title, position=position)
+                db.session.add(module)
+                db.session.commit()
+                flash(f"Модуль '{title}' добавлен", "success")
+
+        elif action == 'add_lesson':
+            module_id = request.form.get('module_id', type=int)
+            title = request.form.get('lesson_title')
+            position = request.form.get('lesson_position', type=int) or 0
+            content = request.form.get('lesson_content', '')
+
+            if title and module_id:
+                lesson = Lesson(module_id=module_id, title=title, position=position, content=content)
+                db.session.add(lesson)
+                db.session.commit()
+                flash(f"Урок '{title}' добавлен", "success")
+
+        elif action == 'update_lesson':
+            lesson_id = request.form.get('lesson_id', type=int)
+            content = request.form.get('lesson_content', '')
+
+            lesson = Lesson.query.get(lesson_id)
+            if lesson:
+                lesson.content = content
+                db.session.commit()
+                flash(f"Контент урока '{lesson.title}' обновлён", "success")
+
+        return redirect(url_for("courses.course_create_edit", course_id=course.id))
+
+    modules = Module.query.filter_by(course_id=course.id).order_by(Module.position).all()
+    return render_template('course_create_edit.html', course=course, modules=modules)

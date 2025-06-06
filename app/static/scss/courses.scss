@@ -195,27 +195,27 @@
 // Адаптивные стили
 @media screen and (max-width: $breakpoint-large) {
   .courses-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 }
 
 @media screen and (max-width: $breakpoint-medium) {
   .courses-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
 
     .course-card {
-      max-width: 100%;
+      max-width: 100% !important;
     }
   }
 }
 
 @media screen and (max-width: $breakpoint-small) {
   .courses-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
   .courses-page {
-    padding: 20px;
+    padding: 5px !important;
   }
 
   .courses-header h1 {

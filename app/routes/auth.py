@@ -54,6 +54,7 @@ def register():
         username = request.form["username"]
         email = request.form["email"]
         password = request.form["password"]
+        role = request.form.get("role", "student")
 
         if User.query.filter_by(username=username).first():
             flash("Этот username уже зарегистрирован!", "danger")
@@ -63,7 +64,7 @@ def register():
             flash("Этот email уже зарегистрирован!", "danger")
             return redirect(url_for("auth.register"))
 
-        new_user = User(username=username, email=email)
+        new_user = User(username=username, email=email, role=role)
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()

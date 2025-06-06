@@ -211,23 +211,23 @@
 
 @media screen and (max-width: 1024px) {
   .courses-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 }
 @media screen and (max-width: 768px) {
   .courses-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
   }
   .courses-grid .course-card {
-    max-width: 100%;
+    max-width: 100% !important;
   }
 }
 @media screen and (max-width: 480px) {
   .courses-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
   .courses-page {
-    padding: 20px;
+    padding: 5px !important;
   }
   .courses-header h1 {
     font-size: 2rem;

@@ -25,6 +25,9 @@
 
             {% if current_user.is_authenticated %}
             <a href="{{ url_for('profile.profile') }}" class="profile-btn">Профиль</a>
+            {% if current_user.role == 'teacher' %}
+            <a href="{{ url_for('courses.course_create_step1') }}" class="login-btn">Создать курс</a>
+            {% endif %}
             <a href="{{ url_for('auth.logout') }}" class="login-btn">Выйти</a>
             {% else %}
             <a href="{{ url_for('auth.login') }}" class="login-btn">Войти</a>
@@ -32,7 +35,8 @@
 
             <!-- Кнопка переключения темы -->
             <button class="theme-toggle" onclick="toggleTheme()">
-                <img id="theme-icon" src="https://cdn-icons-png.flaticon.com/512/1163/1163661.png" class="icon" alt="Тема">
+                <img id="theme-icon" src="https://cdn-icons-png.flaticon.com/512/1163/1163661.png" class="icon"
+                    alt="Тема">
             </button>
 
             <!-- Кнопка настроек (только для авторизованных) -->

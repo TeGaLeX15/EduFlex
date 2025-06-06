@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Создание курса — Шаг 2{% endblock %}
+
+{% block extra_css %}
+<style>
+  .wrapper {
+    max-width: 960px;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
+  h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+  .form-inline {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  input, textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+    font-family: monospace, monospace;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    background-color: #fff;
+  }
+  .btn {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .btn:hover {
+    background-color: #0056b3;
+  }
+  .module-block {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+  }
+  .lesson {
+    margin-bottom: 1rem;
+  }
+  .lesson textarea {
+    margin-top: 0.5rem;
+    min-height: 120px;
+    resize: vertical;
+  }
+  .section-title {
+    margin-top: 2rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .drag-toolbox {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 10px;
+  }
+  .draggable {
+    padding: 6px 12px;
+    border: 1px solid #007bff;
+    border-radius: 6px;
+    cursor: grab;
+    background: #e9f0ff;
+    user-select: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+  }
+  .draggable:active {
+    cursor: grabbing;
+    background-color: #c0d4ff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+  <h2>Шаг 2: Добавьте модули и уроки</h2>
+
+  <form method="POST" class="form-inline" style="margin-bottom: 2rem;">
+    <input type="hidden" name="action" value="add_module">
+    <input type="text" name="module_title" placeholder="Название модуля" required>
+    <input type="number" name="module_position" placeholder="Позиция">
+    <button type="submit" class="btn">Добавить модуль</button>
+  </form>
+
+  {% for module in modules %}
+    <div class="module-block">
+      <h3>Модуль {{ module.position }}: {{ module.title }}</h3>
+
+      {% for lesson in module.lessons|sort(attribute='position') %}
+        <div class="lesson">
+          <strong>{{ lesson.position }} — {{ lesson.title }}</strong>
+
+          <!-- Панель с draggable элементами -->
+          <div class="drag-toolbox">
+            <div class="draggable" draggable="true" data-text="<p>Новый параграф...</p>">Параграф</div>
+            <div class="draggable" draggable="true" data-text="<h2>Заголовок</h2>">Заголовок H2</div>
+            <div class="draggable" draggable="true" data-text="<ul><li>Пункт 1</li><li>Пункт 2</li></ul>">Список</div>
+          </div>
+
+          <form method="POST" class="lesson-form" data-lesson-id="{{ lesson.id }}">
+            <input type="hidden" name="action" value="update_lesson">
+            <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+
+            <!-- Текстовое поле с тегами -->
+            <textarea name="lesson_content" class="editor-area" spellcheck="false" rows="8">{{ lesson.content }}</textarea>
+
+            <button type="submit" class="btn" style="margin-top: 0.5rem;">Сохранить контент</button>
+          </form>
+        </div>
+      {% else %}
+        <p>Уроков пока нет</p>
+      {% endfor %}
+
+      <div class="section-title">Добавить новый урок:</div>
+      <form method="POST">
+        <input type="hidden" name="action" value="add_lesson">
+        <input type="hidden" name="module_id" value="{{ module.id }}">
+        <input type="text" name="lesson_title" placeholder="Название урока" required>
+        <textarea name="lesson_content" rows="2" placeholder="Контент урока"></textarea>
+        <input type="number" name="lesson_position" placeholder="Позиция">
+        <button type="submit" class="btn" style="margin-top: 0.5rem;">Добавить урок</button>
+      </form>
+    </div>
+  {% else %}
+    <p>Модулей пока нет</p>
+  {% endfor %}
+</div>
+
+<script>
+  document.querySelectorAll('.draggable').forEach(draggable => {
+    draggable.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', draggable.dataset.text);
+    });
+  });
+
+  document.querySelectorAll('.lesson-form textarea.editor-area').forEach(textarea => {
+    textarea.addEventListener('dragover', e => e.preventDefault());
+
+    textarea.addEventListener('drop', e => {
+      e.preventDefault();
+      const text = e.dataTransfer.getData('text/plain');
+      insertTextAtCursor(textarea, text);
+    });
+  });
+
+  function insertTextAtCursor(textarea, text) {
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const value = textarea.value;
+
+    textarea.value = value.substring(0, start) + text + value.substring(end);
+
+    // Поставить курсор после вставленного текста
+    const caretPos = start + text.length;
+    textarea.selectionStart = textarea.selectionEnd = caretPos;
+    textarea.focus();
+  }
+</script>
+{% endblock %}

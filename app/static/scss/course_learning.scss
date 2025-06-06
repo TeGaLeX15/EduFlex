@@ -181,7 +181,7 @@
       color: var(--text-color);
       width: 100%;
       max-width: 500px;
-      height: 90vh; // ⚠️ Заменили фиксированную max-height на адаптивную высоту
+      height: 90vh;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
       display: flex;
@@ -394,10 +394,6 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s ease;
 
-      &:hover {
-        transform: translateY(-5px);
-      }
-
       .module-title {
         font-size: 1.25rem;
         font-weight: bold;
@@ -408,7 +404,6 @@
         width: 100%;
         text-align: left;
         cursor: pointer;
-        margin-bottom: 1rem;
         border: none;
         transition: background-color 0.3s;
 
@@ -428,7 +423,7 @@
         padding-left: 0;
 
         .lesson {
-          margin-bottom: 1rem;
+          margin: 1rem 0;
           font-size: 1.125rem;
 
           .lesson-title {

@@ -381,9 +381,6 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
 }
-.course-detail .modules .module:hover {
-  transform: translateY(-5px);
-}
 .course-detail .modules .module .module-title {
   font-size: 1.25rem;
   font-weight: bold;
@@ -394,7 +391,6 @@
   width: 100%;
   text-align: left;
   cursor: pointer;
-  margin-bottom: 1rem;
   border: none;
   transition: background-color 0.3s;
 }
@@ -411,7 +407,7 @@
   padding-left: 0;
 }
 .course-detail .modules .module .lessons .lesson {
-  margin-bottom: 1rem;
+  margin: 1rem 0;
   font-size: 1.125rem;
 }
 .course-detail .modules .module .lessons .lesson .lesson-title {
