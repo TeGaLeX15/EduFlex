@@ -11,11 +11,9 @@ class User(db.Model, UserMixin):
     bio = db.Column(db.Text, default='')
     role = db.Column(db.String(20), nullable=False, default='student')
 
-    # Связь с интересами
     interests = db.relationship('Interest', secondary='user_interests', backref=db.backref('user_interests_set', lazy='dynamic'))
-
-    # Связь с курсами
     courses = db.relationship('Course', secondary='user_course', backref=db.backref('students', lazy='dynamic'))
+    activities = db.relationship('UserActivity', back_populates='user', cascade='all, delete-orphan')
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')

@@ -122,7 +122,8 @@
     }
 
     @include media-query("small") {
-        h1, p {
+        h1,
+        p {
             text-align: center;
         }
 
@@ -142,7 +143,8 @@
     }
 
     @include media-query("medium") {
-        h1, p {
+        h1,
+        p {
             text-align: center;
         }
 
@@ -159,7 +161,7 @@
 
     @include media-query("large") {
         .buttons-container {
-            flex-direction:row; /* На ПК кнопки располагаются в строку */
+            flex-direction: row; /* На ПК кнопки располагаются в строку */
         }
 
         .edit-btn {
@@ -171,13 +173,21 @@
 
 // Скрытие / отображение формы редактирования
 @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @keyframes fadeOut {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 // Стили для анимации формы
@@ -307,29 +317,141 @@ section {
     }
 }
 
-// ============ Активность ============
 .activity-list {
-    @extend .courses-list;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 .activity-item {
-    background-color: var(--background-color);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, var(--highlight-color), var(--primary-color));
+    color: var(--white-color);
+    padding: 24px 28px;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: default;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 
-    p {
-        margin: 0 0 10px;
+    &:hover {
+        box-shadow: 0 0 20px var(--primary-color);
+    }
 
-        strong {
-            color: var(--primary-color);
-        }
+    &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        background: var(--secondary-color);
+        border-radius: 6px 0 0 6px;
+    }
 
-        small {
-            display: block;
-            color: var(--text-color);
+    .activity-description {
+        flex: 1;
+        margin-right: 20px;
+
+        p {
+            margin: 0 0 12px;
+
+            &:last-child {
+                margin-bottom: 0;
+                opacity: 0.85;
+                font-size: 0.85rem;
+                font-style: normal;
+            }
+
+            strong {
+                font-weight: 700;
+                text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                letter-spacing: 0.02em;
+            }
+
+            small {
+                color: rgba(255, 255, 255, 0.8);
+                font-style: italic;
+            }
         }
     }
+
+    .activity-timestamp {
+        white-space: nowrap;
+        font-size: 0.85rem;
+        opacity: 0.75;
+        font-style: italic;
+        min-width: 110px;
+        text-align: right;
+        color: rgba(255, 255, 255, 0.9);
+    }
+}
+
+// Адаптивность
+@media (max-width: $breakpoint-medium) {
+  .activity-item {
+    padding: 18px 22px;
+    border-radius: 10px;
+
+    p {
+      strong {
+        font-size: 1rem;
+      }
+
+      small {
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 468px) {
+  .activity-list {
+    gap: 10px;
+    padding: 0 10px; // немного отступов слева и справа
+  }
+
+  .activity-item {
+    flex-direction: column; // ставим контент вертикально
+    align-items: flex-start; // выравнивание по левому краю
+    padding: 12px 16px;
+    border-radius: 8px;
+
+    &::before {
+      width: 4px; // чуть уже полоска слева
+      border-radius: 4px 0 0 4px;
+    }
+
+    .activity-description {
+      margin-right: 0;
+      margin-bottom: 10px; // отступ снизу между описанием и датой
+      width: 100%; // описание занимает всю ширину
+    }
+
+    .activity-timestamp {
+      min-width: auto;
+      width: 100%;
+      text-align: left; // выравниваем дату слева под описанием
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+
+    p {
+      strong {
+        font-size: 0.9rem;
+      }
+
+      small {
+        font-size: 0.7rem;
+      }
+    }
+  }
 }
 
 // ============ Ссылка "все курсы" ============

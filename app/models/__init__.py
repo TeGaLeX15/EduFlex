@@ -10,4 +10,4 @@ from .news import News
 from .interest import Interest
 from .progress import Progress
 from .quiz_attempt import QuizAttempt
-# Добавь другие модели по мере необходимости
+from .user_activity import UserActivity

@@ -201,7 +201,8 @@
   width: auto; /* Оставляем фиксированную ширину для сохранения */
 }
 @media (max-width: 480px) {
-  .user-details h1, .user-details p {
+  .user-details h1,
+  .user-details p {
     text-align: center;
   }
   .user-details .buttons-container {
@@ -217,7 +218,8 @@
   }
 }
 @media (max-width: 768px) {
-  .user-details h1, .user-details p {
+  .user-details h1,
+  .user-details p {
     text-align: center;
   }
   .user-details .buttons-container {
@@ -274,12 +276,12 @@ section h2 {
   color: var(--secondary-color);
 }
 
-.courses-list, .activity-list, .achievements-list {
+.courses-list, .achievements-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
-.courses-list .course-card, .activity-list .course-card, .achievements-list .course-card {
+.courses-list .course-card, .achievements-list .course-card {
   background-color: var(--background-color);
   border: 2px solid var(--primary-color);
   border-radius: 12px;
@@ -292,34 +294,34 @@ section h2 {
   transition: box-shadow 0.3s ease;
   position: relative; /* Добавление позиции для дополнительных эффектов */
 }
-.courses-list .course-card:hover, .activity-list .course-card:hover, .achievements-list .course-card:hover {
+.courses-list .course-card:hover, .achievements-list .course-card:hover {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
   border-color: var(--secondary-color);
 }
-.courses-list .course-card .course-title, .activity-list .course-card .course-title, .achievements-list .course-card .course-title {
+.courses-list .course-card .course-title, .achievements-list .course-card .course-title {
   font-size: clamp(1.6rem, 4vw, 2.2rem);
   color: var(--primary-color);
   font-weight: bold;
   text-align: left; /* Выравнивание по левому краю */
 }
-.courses-list .course-card .course-description, .activity-list .course-card .course-description, .achievements-list .course-card .course-description {
+.courses-list .course-card .course-description, .achievements-list .course-card .course-description {
   font-size: 1rem;
   color: var(--dark-gray-color);
   line-height: 1.6;
   text-align: left; /* Выравнивание по левому краю */
 }
-.courses-list .course-card .course-meta, .activity-list .course-card .course-meta, .achievements-list .course-card .course-meta {
+.courses-list .course-card .course-meta, .achievements-list .course-card .course-meta {
   font-size: 0.95rem;
   color: var(--muted-color);
   margin-bottom: 20px; /* Добавление отступа между метой и кнопкой */
   text-align: left; /* Выравнивание по левому краю */
 }
-.courses-list .course-card .course-meta .rating, .activity-list .course-card .course-meta .rating, .achievements-list .course-card .course-meta .rating {
+.courses-list .course-card .course-meta .rating, .achievements-list .course-card .course-meta .rating {
   font-weight: bold;
   color: var(--warning-color);
   font-size: 1.1rem;
 }
-.courses-list .course-card .btn, .activity-list .course-card .btn, .achievements-list .course-card .btn {
+.courses-list .course-card .btn, .achievements-list .course-card .btn {
   background-color: var(--primary-color);
   color: var(--white-color);
   padding: 12px 24px;
@@ -333,11 +335,11 @@ section h2 {
   font-size: 1rem;
   margin-top: 30px;
 }
-.courses-list .course-card .btn:hover, .activity-list .course-card .btn:hover, .achievements-list .course-card .btn:hover {
+.courses-list .course-card .btn:hover, .achievements-list .course-card .btn:hover {
   background-color: var(--secondary-color);
 }
 @media (max-width: 768px) {
-  .courses-list, .activity-list, .achievements-list {
+  .courses-list, .achievements-list {
     grid-template-columns: 1fr;
   }
 }
@@ -364,23 +366,118 @@ section h2 {
   font-size: 0.95rem;
 }
 
-.activity-item {
-  background-color: var(--background-color);
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-}
-.activity-item p {
-  margin: 0 0 10px;
-}
-.activity-item p strong {
-  color: var(--primary-color);
-}
-.activity-item p small {
-  display: block;
-  color: var(--text-color);
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
+.activity-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, var(--highlight-color), var(--primary-color));
+  color: var(--white-color);
+  padding: 24px 28px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: default;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.activity-item:hover {
+  box-shadow: 0 0 20px var(--primary-color);
+}
+.activity-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--secondary-color);
+  border-radius: 6px 0 0 6px;
+}
+.activity-item .activity-description {
+  flex: 1;
+  margin-right: 20px;
+}
+.activity-item .activity-description p {
+  margin: 0 0 12px;
+}
+.activity-item .activity-description p:last-child {
+  margin-bottom: 0;
+  opacity: 0.85;
+  font-size: 0.85rem;
+  font-style: normal;
+}
+.activity-item .activity-description p strong {
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.02em;
+}
+.activity-item .activity-description p small {
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+}
+.activity-item .activity-timestamp {
+  white-space: nowrap;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  font-style: italic;
+  min-width: 110px;
+  text-align: right;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 768px) {
+  .activity-item {
+    padding: 18px 22px;
+    border-radius: 10px;
+  }
+  .activity-item p strong {
+    font-size: 1rem;
+  }
+  .activity-item p small {
+    font-size: 0.8rem;
+  }
+}
+@media (max-width: 468px) {
+  .activity-list {
+    gap: 10px;
+    padding: 0 10px;
+  }
+  .activity-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 16px;
+    border-radius: 8px;
+  }
+  .activity-item::before {
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+  }
+  .activity-item .activity-description {
+    margin-right: 0;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+  .activity-item .activity-timestamp {
+    min-width: auto;
+    width: 100%;
+    text-align: left;
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+  .activity-item p strong {
+    font-size: 0.9rem;
+  }
+  .activity-item p small {
+    font-size: 0.7rem;
+  }
+}
 .view-all-courses {
   text-decoration: none;
   color: var(--primary-color);

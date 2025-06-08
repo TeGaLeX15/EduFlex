@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app.database import db
 from app.models.user import User
 from app.models.interest import Interest
+from app.models.user_activity import UserActivity
 from flask import session, abort
 
 auth_bp = Blueprint("auth", __name__)
@@ -42,6 +43,15 @@ def save_interests():
         # Сохраняем изменения в базе данных
         db.session.commit()
 
+        interests_str = ", ".join([interest.name for interest in interests])
+        activity = UserActivity(
+            user_id=current_user.id,
+            activity_type='onboarding_interests',
+            description=f'Вы выбрали следующие интересы: {interests_str}'
+        )
+        db.session.add(activity)
+        db.session.commit()
+
         return {'status': 'ok'}
     except Exception as e:
         print(f"Error occurred: {e}")
@@ -67,6 +77,14 @@ def register():
         new_user = User(username=username, email=email, role=role)
         new_user.set_password(password)
         db.session.add(new_user)
+        db.session.commit()
+
+        activity = UserActivity(
+            user_id=new_user.id,
+            activity_type='register',
+            description='Вы зарегистрировались в системе'
+        )
+        db.session.add(activity)
         db.session.commit()
 
         flash("Регистрация успешна! Теперь войдите в систему.", "success")
