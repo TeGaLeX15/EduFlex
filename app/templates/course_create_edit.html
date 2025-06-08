@@ -2,97 +2,7 @@
 {% block title %}Создание курса — Шаг 2{% endblock %}
 
 {% block extra_css %}
-<style>
-  .wrapper {
-    max-width: 960px;
-    margin: 2rem auto;
-    background: #fff;
-    padding: 2.5rem;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-  }
-  h2 {
-    margin-bottom: 1.5rem;
-    font-size: 1.75rem;
-    font-weight: 700;
-  }
-  .form-inline {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  input, textarea {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    transition: border-color 0.3s ease;
-    font-family: monospace, monospace;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-  }
-  input:focus, textarea:focus {
-    outline: none;
-    border-color: #007bff;
-    background-color: #fff;
-  }
-  .btn {
-    background-color: #007bff;
-    color: #fff;
-    font-weight: 600;
-    padding: 0.75rem 1.25rem;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  .btn:hover {
-    background-color: #0056b3;
-  }
-  .module-block {
-    border: 1px solid #ddd;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    border-radius: 12px;
-  }
-  .lesson {
-    margin-bottom: 1rem;
-  }
-  .lesson textarea {
-    margin-top: 0.5rem;
-    min-height: 120px;
-    resize: vertical;
-  }
-  .section-title {
-    margin-top: 2rem;
-    font-size: 1.25rem;
-    font-weight: 600;
-  }
-
-  .drag-toolbox {
-    margin-bottom: 1rem;
-    display: flex;
-    gap: 10px;
-  }
-  .draggable {
-    padding: 6px 12px;
-    border: 1px solid #007bff;
-    border-radius: 6px;
-    cursor: grab;
-    background: #e9f0ff;
-    user-select: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease;
-  }
-  .draggable:active {
-    cursor: grabbing;
-    background-color: #c0d4ff;
-  }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/course_create_edit.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -107,77 +17,100 @@
   </form>
 
   {% for module in modules %}
-    <div class="module-block">
+  <div class="module-block" data-module-id="{{ module.id }}">
+    <div class="header-row">
       <h3>Модуль {{ module.position }}: {{ module.title }}</h3>
+      <div class="btn-group">
+        <button type="button" class="btn btn-edit-module" data-module-id="{{ module.id }}">Редактировать</button>
+        <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить модуль?');">
+          <input type="hidden" name="action" value="delete_module">
+          <input type="hidden" name="module_id" value="{{ module.id }}">
+          <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+      </div>
+    </div>
 
-      {% for lesson in module.lessons|sort(attribute='position') %}
-        <div class="lesson">
-          <strong>{{ lesson.position }} — {{ lesson.title }}</strong>
+    <form method="POST" class="edit-module-form" data-module-id="{{ module.id }}"
+      style="display:none; margin-bottom: 1rem;">
+      <input type="hidden" name="action" value="edit_module">
+      <input type="hidden" name="module_id" value="{{ module.id }}">
+      <input type="text" name="module_title" value="{{ module.title }}" required>
+      <input type="number" name="module_position" value="{{ module.position }}">
+      <button type="submit" class="btn">Сохранить</button>
+      <button type="button" class="btn btn-cancel-edit" data-module-id="{{ module.id }}">Отмена</button>
+    </form>
 
-          <!-- Панель с draggable элементами -->
-          <div class="drag-toolbox">
-            <div class="draggable" draggable="true" data-text="<p>Новый параграф...</p>">Параграф</div>
-            <div class="draggable" draggable="true" data-text="<h2>Заголовок</h2>">Заголовок H2</div>
-            <div class="draggable" draggable="true" data-text="<ul><li>Пункт 1</li><li>Пункт 2</li></ul>">Список</div>
-          </div>
+    <hr>
 
-          <form method="POST" class="lesson-form" data-lesson-id="{{ lesson.id }}">
-            <input type="hidden" name="action" value="update_lesson">
+    {% for lesson in module.lessons|sort(attribute='position') %}
+    <div class="lesson" data-lesson-id="{{ lesson.id }}">
+      <div class="lesson-header">
+        <strong>Урок {{ lesson.position }} — {{ lesson.title }}</strong>
+        <div class="btn-group">
+          <button type="button" class="btn btn-edit-lesson" data-lesson-id="{{ lesson.id }}">Редактировать</button>
+          <form method="POST" style="display: inline;" onsubmit="return confirm('Удалить урок?');">
+            <input type="hidden" name="action" value="delete_lesson">
             <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
-
-            <!-- Текстовое поле с тегами -->
-            <textarea name="lesson_content" class="editor-area" spellcheck="false" rows="8">{{ lesson.content }}</textarea>
-
-            <button type="submit" class="btn" style="margin-top: 0.5rem;">Сохранить контент</button>
+            <button type="submit" class="btn btn-danger">Удалить</button>
           </form>
         </div>
-      {% else %}
-        <p>Уроков пока нет</p>
-      {% endfor %}
+      </div>
 
-      <div class="section-title">Добавить новый урок:</div>
-      <form method="POST">
-        <input type="hidden" name="action" value="add_lesson">
-        <input type="hidden" name="module_id" value="{{ module.id }}">
-        <input type="text" name="lesson_title" placeholder="Название урока" required>
-        <textarea name="lesson_content" rows="2" placeholder="Контент урока"></textarea>
-        <input type="number" name="lesson_position" placeholder="Позиция">
-        <button type="submit" class="btn" style="margin-top: 0.5rem;">Добавить урок</button>
+      <form method="POST" class="lesson-form edit-lesson-form" data-lesson-id="{{ lesson.id }}" style="display: none;">
+        <input type="hidden" name="action" value="edit_lesson">
+        <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+        <input type="text" name="lesson_title" value="{{ lesson.title }}" required>
+
+        <div class="drag-toolbox">
+          <div class="draggable" draggable="true" data-html="<p>Абзац текста...</p>">Параграф</div>
+          <div class="draggable" draggable="true" data-html="<h1>Заголовок H1</h1>">Заголовок H1</div>
+          <div class="draggable" draggable="true" data-html="<h2>Заголовок H2</h2>">Заголовок H2</div>
+          <div class="draggable" draggable="true" data-html="<h3>Заголовок H3</h3>">Заголовок H3</div>
+          <div class="draggable" draggable="true" data-html="<ul><li>Пункт списка 1</li><li>Пункт списка 2</li></ul>">Маркированный список</div>
+          <div class="draggable" draggable="true" data-html="<ol><li>Пункт списка 1</li><li>Пункт списка 2</li></ol>">Нумерованный список</div>
+          <div class="draggable" draggable="true" data-html="<strong>Жирный текст</strong>">Жирный текст</div>
+          <div class="draggable" draggable="true" data-html="<em>Курсивный текст</em>">Курсивный текст</div>
+          <div class="draggable" draggable="true" data-html="<blockquote>Цитата или блок с выделением</blockquote>">Цитата</div>
+          <div class="draggable" draggable="true" data-html="<pre><code>Код или моноширинный блок</code></pre>">Код</div>
+          <div class="draggable" draggable="true" data-html="<hr />">Горизонтальная линия</div>
+          <div class="draggable" draggable="true" data-html="<a href='#'>Ссылка</a>">Ссылка</div>
+        </div>
+
+        <div class="editor-area" name="lesson_content" contenteditable="true" spellcheck="false">{{ lesson.content | safe }}</div>
+        <input type="number" name="lesson_position" value="{{ lesson.position }}">
+        <div class="btn-group">
+          <button type="submit" class="btn">Сохранить изменения</button>
+          <button type="button" class="btn btn-cancel-edit-lesson" data-lesson-id="{{ lesson.id }}">Отмена</button>
+        </div>
       </form>
     </div>
+    {% else %}
+    <p>Уроков пока нет</p>
+    {% endfor %}
+
+    <div class="section-title">Добавить новый урок:</div>
+    <form method="POST">
+      <input type="hidden" name="action" value="add_lesson">
+      <input type="hidden" name="module_id" value="{{ module.id }}">
+      <input type="text" name="lesson_title" placeholder="Название урока" required>
+      <textarea name="lesson_content" rows="2" placeholder="Контент урока"></textarea>
+      <input type="number" name="lesson_position" placeholder="Позиция">
+      <button type="submit" class="btn" style="margin-top: 0.5rem;">Добавить урок</button>
+    </form>
+  </div>
   {% else %}
-    <p>Модулей пока нет</p>
+  <p>Модулей пока нет</p>
   {% endfor %}
+
+  <form method="POST" style="margin-top: 2rem;">
+    <input type="hidden" name="action" value="publish_course">
+    {% if course.status == STATUS_PUBLISHED %}
+    <button type="submit" class="btn" disabled>Курс уже опубликован</button>
+    {% else %}
+    <button type="submit" class="btn">Опубликовать курс</button>
+    {% endif %}
+  </form>
 </div>
 
-<script>
-  document.querySelectorAll('.draggable').forEach(draggable => {
-    draggable.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('text/plain', draggable.dataset.text);
-    });
-  });
-
-  document.querySelectorAll('.lesson-form textarea.editor-area').forEach(textarea => {
-    textarea.addEventListener('dragover', e => e.preventDefault());
-
-    textarea.addEventListener('drop', e => {
-      e.preventDefault();
-      const text = e.dataTransfer.getData('text/plain');
-      insertTextAtCursor(textarea, text);
-    });
-  });
-
-  function insertTextAtCursor(textarea, text) {
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const value = textarea.value;
-
-    textarea.value = value.substring(0, start) + text + value.substring(end);
-
-    // Поставить курсор после вставленного текста
-    const caretPos = start + text.length;
-    textarea.selectionStart = textarea.selectionEnd = caretPos;
-    textarea.focus();
-  }
-</script>
+<script src="{{ url_for('static', filename='js/draggableElementsLesson.js') }}"></script>
 {% endblock %}

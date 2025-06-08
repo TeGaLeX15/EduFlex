@@ -123,7 +123,12 @@ h1 {
   border-bottom: 1px solid #000;
   z-index: 999;
   /* Адаптация для экранов от 768px (планшеты и большие телефоны) */
-  /* Адаптация для экранов от 480px (мобильные телефоны) */
+}
+.navbar .mobile-menu-toggle {
+  display: none;
+}
+.navbar .mobile-menu {
+  display: none;
 }
 .navbar .nav-left {
   display: flex;
@@ -136,6 +141,11 @@ h1 {
   display: flex;
   align-items: center;
   gap: 20px;
+}
+@media (max-width: 1024px) {
+  .navbar .nav-right {
+    display: none;
+  }
 }
 .navbar a {
   font-weight: 500;
@@ -217,44 +227,95 @@ h1 {
 .navbar .settings-btn:hover img.icon {
   filter: brightness(1.2); /* Ярче при наведении */
 }
+@media (max-width: 1024px) {
+  .navbar .navbar .nav-right {
+    display: none;
+  }
+  .navbar .mobile-menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--text-color);
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    z-index: 1100;
+  }
+  .navbar .mobile-menu {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--background-color);
+    padding: 30px 20px;
+    z-index: 1000;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+    justify-content: center;
+    animation: slideFadeIn 0.3s ease forwards;
+  }
+  .navbar .mobile-menu a,
+  .navbar .mobile-menu .settings-btn,
+  .navbar .mobile-menu .theme-toggle {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    font-size: 18px;
+    padding: 12px;
+    border-radius: 8px;
+    background: var(--primary-color);
+    color: var(--white-color);
+    text-align: center;
+    transition: background 0.3s ease;
+  }
+  .navbar .mobile-menu a:hover,
+  .navbar .mobile-menu .settings-btn:hover,
+  .navbar .mobile-menu .theme-toggle:hover {
+    background: var(--secondary-color);
+  }
+  .navbar .mobile-menu .menu-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  .navbar .mobile-menu.show {
+    display: flex;
+  }
+  @keyframes slideFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  .navbar .nav-left, .navbar .nav-right {
+  .navbar .nav-left,
+  .navbar .nav-right {
     width: 100%;
     justify-content: flex-start;
   }
   .navbar .nav-right {
-    flex-wrap: wrap; /* Элементы могут переноситься */
+    flex-wrap: wrap;
     gap: 10px;
-  }
-  .navbar a {
-    margin: 10px 0;
-    display: inline-block;
   }
   .navbar .login-btn {
     margin-top: 20px;
     align-self: flex-start;
     padding: 10px 20px;
   }
-  .navbar .theme-toggle {
-    margin-top: 15px;
-    align-self: flex-start;
-  }
 }
 @media (max-width: 480px) {
-  .navbar {
-    padding: 10px 20px; /* Уменьшаем отступы для мобильных устройств */
-  }
-  .navbar .nav-left {
-    margin-bottom: 10px;
-  }
-  .navbar .nav-right {
-    gap: 15px; /* Меньше расстояние между кнопками */
-  }
   .navbar .theme-toggle {
     width: 40px;
     height: 40px;
@@ -344,13 +405,6 @@ h1 {
 }
 .sidebar-toggle:hover {
   background: var(--secondary-color);
-}
-@media (max-width: 480px) {
-  .sidebar-toggle {
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    font-size: 0.95rem;
-  }
 }
 
 .main-content {

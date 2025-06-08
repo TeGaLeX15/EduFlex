@@ -20,10 +20,8 @@ class Course(db.Model):
 
     language = db.relationship('ProgrammingLanguage', backref='associated_courses')
 
-    # Связь с пользователями через промежуточную таблицу
-    enrolled_users = db.relationship('UserCourse', backref='enrolled_course', lazy=True)  # Уникальное имя backref
+    enrolled_users = db.relationship('UserCourse', backref='enrolled_course', lazy=True)
 
-    # Связь с интересами через промежуточную таблицу course_interests
     interests = db.relationship(
         'Interest',
         secondary='course_interests',
@@ -32,8 +30,15 @@ class Course(db.Model):
         secondaryjoin='Interest.id == course_interests.c.interest_id'
     )
 
-    # Используем строковое представление для связи с модулями
     modules = db.relationship('Module', backref='course', lazy=True)
+
+    # Новое — поля для статуса и автора
+    STATUS_DRAFT = 'draft'
+    STATUS_PUBLISHED = 'published'
+
+    status = db.Column(db.String(20), nullable=False, default=STATUS_DRAFT)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    author = db.relationship('User', backref='authored_courses')
 
     def __repr__(self):
         return f'<Course {self.title}>'

@@ -29,31 +29,61 @@ courses_bp = Blueprint("courses", __name__)
 def courses_main():
     search_query = request.args.get('search', '').strip()
     show_all = request.args.get('show_all') == 'on'
+    category = request.args.get('category', '').lower()
+
+    # Сопоставление slug категории к id интереса
+    category_map = {
+        'frontend': 1,
+        'backend': 2,
+        'uiux': 3,
+        'datasci': 4,
+        'mobile': 5,
+        'ai': 6
+    }
 
     user_interest_ids = [interest.id for interest in current_user.interests]
 
-    if show_all or not user_interest_ids:
-        # Показываем все курсы, если выбрана галочка "Показать все" или у пользователя нет интересов
-        if search_query:
-            courses = Course.query.filter(
-                (Course.title.ilike(f'%{search_query}%')) |
-                (Course.description.ilike(f'%{search_query}%'))
-            ).all()
-        else:
-            courses = Course.query.all()
-    else:
-        # Показываем только курсы по интересам
-        query = Course.query.join(Course.interests).filter(Interest.id.in_(user_interest_ids))
+    base_filter = (Course.status == Course.STATUS_PUBLISHED)
 
+    # Если передана категория и она валидна
+    if category and category in category_map:
+        category_id = category_map[category]
+        # Показываем курсы, относящиеся к выбранной категории
+        query = Course.query.join(Course.interests).filter(
+            Interest.id == category_id,
+            base_filter
+        )
+        # Если есть поисковый запрос, применяем фильтр
         if search_query:
             query = query.filter(
                 (Course.title.ilike(f'%{search_query}%')) |
                 (Course.description.ilike(f'%{search_query}%'))
             )
-
         courses = query.distinct().all()
+        no_courses_found = not courses
+    else:
+        # Если категория не передана, показываем по интересам пользователя или все
+        if show_all or not user_interest_ids:
+            query = Course.query.filter(base_filter)
+            if search_query:
+                query = query.filter(
+                    (Course.title.ilike(f'%{search_query}%')) |
+                    (Course.description.ilike(f'%{search_query}%'))
+                )
+            courses = query.all()
+        else:
+            query = Course.query.join(Course.interests).filter(
+                Interest.id.in_(user_interest_ids),
+                base_filter
+            )
+            if search_query:
+                query = query.filter(
+                    (Course.title.ilike(f'%{search_query}%')) |
+                    (Course.description.ilike(f'%{search_query}%'))
+                )
+            courses = query.distinct().all()
 
-    no_courses_found = not courses and not show_all
+        no_courses_found = not courses and not show_all
 
     return render_template('courses.html', courses=courses, no_courses_found=no_courses_found, show_all=show_all, search_query=search_query)
 
@@ -483,13 +513,14 @@ def course_create_step1():
             description=description,
             teacher=current_user.username,
             slug=slug,
-            language_id=language_id
+            language_id=language_id,
+            status=Course.STATUS_DRAFT,
+            author_id=current_user.id
         )
 
         db.session.add(new_course)
         db.session.commit()
 
-        # Добавляем связь с категорией (interest)
         interest = Interest.query.get(interest_id)
         if interest:
             new_course.associated_interests.append(interest)
@@ -506,8 +537,17 @@ def course_create_step1():
 def course_create_edit(course_id):
     course = Course.query.get_or_404(course_id)
 
+    if course.author_id != current_user.id:
+        flash("Вы не являетесь автором этого курса и не можете его редактировать.", "danger")
+        return redirect(url_for("courses.courses_main"))
+
     if request.method == 'POST':
         action = request.form.get('action')
+
+        if course.status == Course.STATUS_PUBLISHED:
+            course.status = Course.STATUS_DRAFT
+            db.session.commit()
+            flash("Курс переведён в черновик из-за редактирования.", "warning")
 
         if action == 'add_module':
             title = request.form.get('module_title')
@@ -517,6 +557,31 @@ def course_create_edit(course_id):
                 db.session.add(module)
                 db.session.commit()
                 flash(f"Модуль '{title}' добавлен", "success")
+
+        elif action == 'edit_module':
+            module_id = request.form.get('module_id', type=int)
+            title = request.form.get('module_title')
+            position = request.form.get('module_position', type=int) or 0
+
+            module = Module.query.get(module_id)
+            if module and module.course_id == course.id:
+                if title:
+                    module.title = title
+                    module.position = position
+                    db.session.commit()
+                    flash(f"Модуль '{title}' обновлён", "success")
+                else:
+                    flash("Название модуля не может быть пустым.", "warning")
+
+        elif action == 'delete_module':
+            module_id = request.form.get('module_id', type=int)
+            module = Module.query.get(module_id)
+            if module and module.course_id == course.id:
+                # При удалении модуля, удаляем и все его уроки
+                Lesson.query.filter_by(module_id=module.id).delete()
+                db.session.delete(module)
+                db.session.commit()
+                flash(f"Модуль '{module.title}' удалён", "success")
 
         elif action == 'add_lesson':
             module_id = request.form.get('module_id', type=int)
@@ -529,16 +594,41 @@ def course_create_edit(course_id):
                 db.session.add(lesson)
                 db.session.commit()
                 flash(f"Урок '{title}' добавлен", "success")
+            else:
+                flash("Название урока и модуль обязательны.", "warning")
 
-        elif action == 'update_lesson':
+        elif action == 'edit_lesson':
             lesson_id = request.form.get('lesson_id', type=int)
+            title = request.form.get('lesson_title')
             content = request.form.get('lesson_content', '')
+            position = request.form.get('lesson_position', type=int) or 0
 
             lesson = Lesson.query.get(lesson_id)
-            if lesson:
-                lesson.content = content
+            if lesson and lesson.module.course_id == course.id:
+                if title:
+                    lesson.title = title
+                    lesson.content = content
+                    lesson.position = position
+                    db.session.commit()
+                    flash(f"Урок '{title}' обновлён", "success")
+                else:
+                    flash("Название урока не может быть пустым.", "warning")
+
+        elif action == 'delete_lesson':
+            lesson_id = request.form.get('lesson_id', type=int)
+            lesson = Lesson.query.get(lesson_id)
+            if lesson and lesson.module.course_id == course.id:
+                db.session.delete(lesson)
                 db.session.commit()
-                flash(f"Контент урока '{lesson.title}' обновлён", "success")
+                flash(f"Урок '{lesson.title}' удалён", "success")
+
+        elif action == 'publish_course':
+            if course.status != Course.STATUS_PUBLISHED:
+                course.status = Course.STATUS_PUBLISHED
+                db.session.commit()
+                flash("Курс успешно опубликован!", "success")
+            else:
+                flash("Курс уже опубликован.", "info")
 
         return redirect(url_for("courses.course_create_edit", course_id=course.id))
 

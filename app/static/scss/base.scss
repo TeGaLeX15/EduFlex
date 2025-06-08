@@ -37,6 +37,14 @@ h1 {
   border-bottom: 1px solid #000;
   z-index: 999;
 
+  .mobile-menu-toggle {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: none;
+  }
+
   .nav-left {
     display: flex;
     align-items: center;
@@ -50,6 +58,10 @@ h1 {
     display: flex;
     align-items: center;
     gap: 20px;
+
+    @media (max-width: 1024px) {
+      display: none;
+    }
   }
 
   a {
@@ -87,30 +99,32 @@ h1 {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease; /* Плавные переходы */
-  
+    transition:
+      background 0.3s ease,
+      box-shadow 0.3s ease; /* Плавные переходы */
+
     img.icon {
       width: 24px;
       height: 24px;
       pointer-events: none;
       transition: filter 0.3s ease; /* Плавное изменение яркости */
     }
-  
+
     &:hover {
       background: var(--secondary-color); /* Используем вторичный цвет при наведении */
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Добавляем легкую тень */
     }
-  
+
     &:active {
       background: var(--hover-bg-color); /* Цвет фона при нажатии */
       transform: scale(0.95); /* Легкое уменьшение при клике */
     }
-  
+
     /* Для изменения иконки */
     &:hover img.icon {
       filter: brightness(1.2); /* Ярче при наведении */
     }
-  }  
+  }
 
   .settings-btn {
     width: 38px;
@@ -122,30 +136,105 @@ h1 {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease; /* Плавные переходы */
-    
+    transition:
+      background 0.3s ease,
+      box-shadow 0.3s ease; /* Плавные переходы */
+
     img.icon {
       width: 24px;
       height: 24px;
       pointer-events: none;
       transition: filter 0.3s ease; /* Плавное изменение яркости */
     }
-  
+
     &:hover {
       background: var(--secondary-color); /* Вторичный цвет при наведении */
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Легкая тень */
     }
-  
+
     &:active {
       background: var(--hover-bg-color); /* Цвет фона при нажатии */
       transform: scale(0.95); /* Легкое уменьшение при клике */
     }
-  
+
     /* Для изменения иконки */
     &:hover img.icon {
       filter: brightness(1.2); /* Ярче при наведении */
     }
-  }  
+  }
+
+  @media (max-width: 1024px) {
+    .navbar .nav-right {
+      display: none;
+    }
+
+    .mobile-menu-toggle {
+      display: block;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: var(--text-color);
+      cursor: pointer;
+      position: absolute;
+      right: 20px;
+      top: 15px;
+      z-index: 1100;
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0; // заменяет top/right/bottom/left
+      background: var(--background-color);
+      padding: 30px 20px;
+      z-index: 1000;
+      flex-direction: column;
+      gap: 24px;
+      align-items: center;
+      justify-content: center;
+      animation: slideFadeIn 0.3s ease forwards;
+
+      a,
+      .settings-btn,
+      .theme-toggle {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        font-size: 18px;
+        padding: 12px;
+        border-radius: 8px;
+        background: var(--primary-color);
+        color: var(--white-color);
+        text-align: center;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background: var(--secondary-color);
+        }
+      }
+
+      .menu-icons {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+      }
+    }
+
+    .mobile-menu.show {
+      display: flex;
+    }
+
+    @keyframes slideFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
 
   /* Адаптация для экранов от 768px (планшеты и большие телефоны) */
   @include media-query("medium") {
@@ -153,19 +242,15 @@ h1 {
     align-items: flex-start;
     gap: 10px;
 
-    .nav-left, .nav-right {
+    .nav-left,
+    .nav-right {
       width: 100%;
       justify-content: flex-start;
     }
 
     .nav-right {
-      flex-wrap: wrap; /* Элементы могут переноситься */
+      flex-wrap: wrap;
       gap: 10px;
-    }
-
-    a {
-      margin: 10px 0;
-      display: inline-block;
     }
 
     .login-btn {
@@ -173,25 +258,9 @@ h1 {
       align-self: flex-start;
       padding: 10px 20px;
     }
-
-    .theme-toggle {
-      margin-top: 15px;
-      align-self: flex-start;
-    }
   }
 
-  /* Адаптация для экранов от 480px (мобильные телефоны) */
   @include media-query("small") {
-    padding: 10px 20px; /* Уменьшаем отступы для мобильных устройств */
-    
-    .nav-left {
-      margin-bottom: 10px;
-    }
-
-    .nav-right {
-      gap: 15px; /* Меньше расстояние между кнопками */
-    }
-
     .theme-toggle {
       width: 40px;
       height: 40px;
@@ -289,12 +358,6 @@ h1 {
 
   &:hover {
     background: var(--secondary-color);
-  }
-
-  @include media-query("small") {
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    font-size: 0.95rem;
   }
 }
 

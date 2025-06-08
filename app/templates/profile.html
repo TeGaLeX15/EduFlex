@@ -6,6 +6,12 @@
 {% endblock %}
 
 {% block content %}
+
+{% set status_map = {
+    'draft': 'Черновик',
+    'published': 'Опубликован'
+} %}
+
 <div class="profile-container">
   <!-- Секция профиля -->
   <div class="profile-header">
@@ -13,16 +19,13 @@
       <img src="https://img.icons8.com/color/96/user-male.png" alt="User Avatar" class="profile-avatar" />
       <div class="user-details">
         <h1>{{ user.username }}</h1>
-        <!-- Описание профиля -->
         <p id="bio-text">{{ user.bio or 'Добавьте описание о себе.' }}</p>
 
-        <!-- Форма редактирования био -->
         <form id="bio-form" method="POST" action="{{ url_for('profile.update_bio') }}" style="display: none;">
           <textarea name="bio" rows="4">{{ user.bio }}</textarea>
           <button type="submit" class="save-bio-btn">Сохранить</button>
         </form>
 
-        <!-- Кнопка для редактирования -->
         <button class="edit-btn" onclick="toggleBioEdit()">Редактировать</button>
       </div>
     </div>
@@ -32,17 +35,30 @@
   <section class="courses-section">
     <h2>Мои курсы</h2>
     <div class="courses-list">
-      {% if user.courses %}
-      {% for course in user.courses %}
+      {% if courses %}
+      {% for course in courses %}
       <div class="course-card">
         <h3>{{ course.title }}</h3>
         <p>{{ course.description }}</p>
-        <!-- Здесь можно добавить ссылку или кнопку для начала/продолжения курса -->
+
+        {% if user.role == 'teacher' %}
+        <p><strong>Статус:</strong> {{ status_map.get(course.status, course.status) }}</p>
+        <a href="{{ url_for('courses.course_create_edit', course_id=course.id) }}"
+          class="btn btn-edit">Редактировать</a>
+          {% if course.status != 'draft' %}
+          <a href="{{ url_for('courses.course_detail', slug=course.slug) }}" class="btn">Открыть курс</a>
+          {% endif %}
+        {% else %}
         <a href="{{ url_for('courses.course_detail', slug=course.slug) }}" class="btn">Продолжить обучение</a>
+        {% endif %}
       </div>
       {% endfor %}
       {% else %}
+      {% if user.role == 'teacher' %}
+      <p>Вы ещё не создали курсы. <a href="{{ url_for('courses.course_create_step1') }}">Создать курс</a>.</p>
+      {% else %}
       <p>Вы ещё не начали обучение. Выберите курс в <a href="{{ url_for('courses.courses_main') }}">каталоге</a>.</p>
+      {% endif %}
       {% endif %}
     </div>
   </section>

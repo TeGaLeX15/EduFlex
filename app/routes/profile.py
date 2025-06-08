@@ -1,8 +1,6 @@
-# app/routes/profile.py
-from flask import flash
-from app.models.course import Course
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import flash, Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
+from app.models.course import Course
 from app.database import db
 
 profile_bp = Blueprint('profile', __name__)
@@ -10,7 +8,12 @@ profile_bp = Blueprint('profile', __name__)
 @profile_bp.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html', user=current_user)
+    if current_user.role == 'teacher':
+        courses = Course.query.filter_by(author_id=current_user.id).all()
+    else:
+        courses = [course for course in current_user.courses if course.status == Course.STATUS_PUBLISHED]
+
+    return render_template('profile.html', user=current_user, courses=courses)
 
 @profile_bp.route('/profile/update_bio', methods=['POST'])
 @login_required
@@ -25,7 +28,6 @@ def update_bio():
 def start_course(course_id):
     course = Course.query.get(course_id)
     if course:
-        # Проверка, что курс еще не взят пользователем
         if course not in current_user.courses:
             current_user.courses.append(course)
             db.session.commit()

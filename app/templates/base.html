@@ -46,6 +46,40 @@
             </a>
             {% endif %}
         </div>
+
+        <!-- Кнопка открытия мобильного меню (справа) -->
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+
+        <!-- Мобильное меню -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="{{ url_for('index') }}">Главная</a>
+            <a href="{{ url_for('news.all') }}">Новости</a>
+            <a href="{{ url_for('courses.courses_main') }}">Курсы</a>
+            <a href="{{ url_for('about') }}">О нас</a>
+
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('profile.profile') }}">Профиль</a>
+            {% if current_user.role == 'teacher' %}
+            <a href="{{ url_for('courses.course_create_step1') }}">Создать курс</a>
+            {% endif %}
+            <a href="{{ url_for('auth.logout') }}">Выйти</a>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}">Войти</a>
+            {% endif %}
+
+            <div class="menu-icons">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <img id="theme-icon" src="https://cdn-icons-png.flaticon.com/512/1163/1163661.png" class="icon"
+                        alt="Тема">
+                </button>
+
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('settings') }}" class="settings-btn">
+                    <img src="https://cdn-icons-png.flaticon.com/512/126/126472.png" alt="Настройки" class="icon">
+                </a>
+                {% endif %}
+            </div>
+        </div>
     </nav>
 
     <!-- Контейнер для боковой панели и контента -->
@@ -54,19 +88,12 @@
             <div class="sidebar-section">
                 <h3>Категории</h3>
                 <ul class="sidebar-menu">
-                    <li><a href="#">Программирование</a></li>
-                    <li><a href="#">Дизайн</a></li>
-                    <li><a href="#">Маркетинг</a></li>
-                    <li><a href="#">Менеджмент</a></li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <h3>Интересы</h3>
-                <ul class="sidebar-menu">
-                    <li><a href="#">AI</a></li>
-                    <li><a href="#">Web</a></li>
-                    <li><a href="#">Flutter</a></li>
+                <li><a href="/courses?category=frontend">Frontend</a></li>
+                <li><a href="/courses?category=backend">Backend</a></li>
+                <li><a href="/courses?category=uiux">UI/UX</a></li>
+                <li><a href="/courses?category=datasci">Data Science</a></li>
+                <li><a href="/courses?category=mobile">Mobile</a></li>
+                <li><a href="/courses?category=ai">AI</a></li>
                 </ul>
             </div>
         </aside>
@@ -127,6 +154,7 @@
     <script src="{{ url_for('static', filename='js/scrollToTopBtn.js') }}"></script>
     <script src="{{ url_for('static', filename='js/flashMessages.js') }}"></script>
     <script src="{{ url_for('static', filename='js/themeToggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/burgerMenuOpenClose.js') }}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 
