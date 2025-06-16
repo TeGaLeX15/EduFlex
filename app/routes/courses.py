@@ -6,6 +6,7 @@ from app.models.review_vote import ReviewVote
 from app.models.user import User
 from app.models.platform_review import PlatformReview
 from app.models.lesson_progress import LessonProgress
+from app.models.user_activity import UserActivity
 from flask import Flask, render_template, request, redirect, url_for, session, flash, Blueprint, jsonify, Response, stream_with_context, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from app.database import db
@@ -110,10 +111,23 @@ def course_learning(slug):
         flash('Курс не найден', 'error')
         return redirect(url_for('courses.courses_main'))
 
-    if course not in current_user.courses:
+    try:
         current_user.courses.append(course)
         db.session.commit()
+
+        activity = UserActivity(
+            user_id=current_user.id,
+            activity_type='start_course',
+            description=f'Пользователь начал изучать курс: "{course.title}"'
+        )
+        db.session.add(activity)
+        db.session.commit()
+
         flash(f'Вы успешно начали курс "{course.title}"!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Произошла ошибка при начале курса.', 'error')
+        print(f"Ошибка при добавлении курса: {e}")
 
     lesson_id = request.args.get('lesson_id', type=int)
 
@@ -263,6 +277,22 @@ def quiz_page(course, quiz, session_key, score_key, attempt_recorded_key, curren
                 attempt.score = final_score
                 db.session.commit()
                 logger.info(f"📝 Попытка сохранена в момент завершения POST: id={attempt.id}, score={final_score}")
+
+                # 📌 Добавляем запись об активности
+                try:
+                    activity = UserActivity(
+                        user_id=current_user.id,
+                        activity_type='quiz_completed',
+                        description=f'Прошёл квиз: "{quiz.title}" (Урок: "{quiz.lesson.title}") — Балл: {final_score} из {len(questions)}'
+                    )
+                    db.session.add(activity)
+                    db.session.commit()
+                    logger.info(f"🟢 Активность записана: {activity.description}")
+                except Exception as e:
+                    db.session.rollback()
+                    logger.error(f"❌ Ошибка при записи активности: {e}")
+                    flash(f"Ошибка при сохранении активности: {e}", 'error')
+
             session[attempt_recorded_key] = True
             return redirect(url_for('courses.course_result', slug=course.slug, id=quiz.id))
 
@@ -273,7 +303,6 @@ def quiz_page(course, quiz, session_key, score_key, attempt_recorded_key, curren
     if q_index >= len(questions):
         logger.info("🏁 Квиз завершён (GET)")
 
-        # Если попытка уже сохранена, просто завершаем
         if session.get(attempt_recorded_key):
             logger.info("🔁 Попытка уже была записана ранее, просто завершаем")
 
@@ -293,9 +322,20 @@ def quiz_page(course, quiz, session_key, score_key, attempt_recorded_key, curren
                     db.session.add(attempt)
                     db.session.commit()
                     logger.info(f"🆕 Попытка создана (GET): id={attempt.id}, score={final_score}")
+
+                # 📌 Добавляем запись об активности
+                activity = UserActivity(
+                    user_id=current_user.id,
+                    activity_type='quiz_completed',
+                    description=f'Прошёл квиз: "{quiz.title}" (Урок: "{quiz.lesson.title}") — Балл: {final_score} из {len(questions)}'
+                )
+                db.session.add(activity)
+                db.session.commit()
+                logger.info(f"🟢 Активность записана: {activity.description}")
+
             except Exception as e:
                 db.session.rollback()
-                logger.error(f"❌ Ошибка при сохранении попытки: {e}")
+                logger.error(f"❌ Ошибка при сохранении попытки или активности: {e}")
                 flash(f'Ошибка при сохранении попытки: {e}', 'error')
 
             session[attempt_recorded_key] = True
@@ -367,31 +407,63 @@ def about():
 @courses_bp.route('/review/<int:review_id>/vote/<vote_type>', methods=['POST'])
 @login_required
 def vote(review_id, vote_type):
-    # Проверяем, что переданный тип голоса корректен
     if vote_type not in ['like', 'dislike']:
         return jsonify({'success': False, 'error': 'Неверный тип голоса.'}), 400
 
-    # Проверяем, есть ли уже голос текущего пользователя
+    review = PlatformReview.query.get_or_404(review_id)
     existing_vote = ReviewVote.query.filter_by(review_id=review_id, user_id=current_user.id).first()
 
-    review = PlatformReview.query.get_or_404(review_id)
+    try:
+        author_name = review.user.username if review.user else 'Неизвестный пользователь'
+        logger.debug(f"📌 Автор отзыва: {author_name}")
 
-    if existing_vote:
-        # Если текущий голос отличается от нового, изменяем его
-        if existing_vote.vote_type != vote_type:
-            # Обновляем количество голосов на отзыве
-            if existing_vote.vote_type == 'like':
-                review.likes_count -= 1
-            elif existing_vote.vote_type == 'dislike':
-                review.dislikes_count -= 1
-            
+        if existing_vote:
+            if existing_vote.vote_type != vote_type:
+                if existing_vote.vote_type == 'like':
+                    review.likes_count -= 1
+                elif existing_vote.vote_type == 'dislike':
+                    review.dislikes_count -= 1
+
+                if vote_type == 'like':
+                    review.likes_count += 1
+                elif vote_type == 'dislike':
+                    review.dislikes_count += 1
+
+                existing_vote.vote_type = vote_type
+                db.session.commit()
+
+                activity = UserActivity(
+                    user_id=current_user.id,
+                    activity_type='review_vote_changed',
+                    description=f'Изменил голос на "{vote_type}" для отзыва пользователя {author_name}: "{review.content}"'
+                )
+                db.session.add(activity)
+                db.session.commit()
+
+                return jsonify({
+                    'success': True,
+                    'likes_count': review.likes_count,
+                    'dislikes_count': review.dislikes_count
+                })
+            else:
+                return jsonify({'success': False, 'error': 'Вы уже проголосовали таким образом.'}), 400
+        else:
+            new_vote = ReviewVote(review_id=review_id, user_id=current_user.id, vote_type=vote_type)
+            db.session.add(new_vote)
+
             if vote_type == 'like':
                 review.likes_count += 1
             elif vote_type == 'dislike':
                 review.dislikes_count += 1
 
-            # Обновляем голос
-            existing_vote.vote_type = vote_type
+            db.session.commit()
+
+            activity = UserActivity(
+                user_id=current_user.id,
+                activity_type='review_vote',
+                description=f'Проголосовал "{vote_type}" за отзыв пользователя {author_name}: "{review.content[:50]}..."'
+            )
+            db.session.add(activity)
             db.session.commit()
 
             return jsonify({
@@ -399,25 +471,11 @@ def vote(review_id, vote_type):
                 'likes_count': review.likes_count,
                 'dislikes_count': review.dislikes_count
             })
-        else:
-            return jsonify({'success': False, 'error': 'Вы уже проголосовали таким образом.'}), 400
-    else:
-        # Если голосов не было, создаём новый
-        new_vote = ReviewVote(review_id=review_id, user_id=current_user.id, vote_type=vote_type)
-        db.session.add(new_vote)
 
-        if vote_type == 'like':
-            review.likes_count += 1
-        elif vote_type == 'dislike':
-            review.dislikes_count += 1
-
-        db.session.commit()
-
-        return jsonify({
-            'success': True,
-            'likes_count': review.likes_count,
-            'dislikes_count': review.dislikes_count
-        })
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f'❌ Ошибка при голосовании: {e}')
+        return jsonify({'success': False, 'error': 'Ошибка на сервере.'}), 500
 
 @courses_bp.route('/chat-stream', methods=['POST'])
 def chat_ai():
@@ -521,6 +579,14 @@ def course_create_step1():
         db.session.add(new_course)
         db.session.commit()
 
+        activity = UserActivity(
+            user_id=current_user.id,
+            activity_type='course_created',
+            description=f'Вы создали курс: "{new_course.title}"'
+        )
+        db.session.add(activity)
+        db.session.commit()
+
         interest = Interest.query.get(interest_id)
         if interest:
             new_course.associated_interests.append(interest)
@@ -558,6 +624,14 @@ def course_create_edit(course_id):
                 db.session.commit()
                 flash(f"Модуль '{title}' добавлен", "success")
 
+                activity = UserActivity(
+                    user_id=current_user.id,
+                    activity_type='module_added',
+                    description=f"Вы добавили модуль '{title}' в курс '{course.title}'"
+                )
+                db.session.add(activity)
+                db.session.commit()
+
         elif action == 'edit_module':
             module_id = request.form.get('module_id', type=int)
             title = request.form.get('module_title')
@@ -570,6 +644,14 @@ def course_create_edit(course_id):
                     module.position = position
                     db.session.commit()
                     flash(f"Модуль '{title}' обновлён", "success")
+
+                    activity = UserActivity(
+                        user_id=current_user.id,
+                        activity_type='module_edited',
+                        description=f"Вы обновили модуль '{title}' в курсе '{course.title}'"
+                    )
+                    db.session.add(activity)
+                    db.session.commit()
                 else:
                     flash("Название модуля не может быть пустым.", "warning")
 
@@ -577,11 +659,18 @@ def course_create_edit(course_id):
             module_id = request.form.get('module_id', type=int)
             module = Module.query.get(module_id)
             if module and module.course_id == course.id:
-                # При удалении модуля, удаляем и все его уроки
                 Lesson.query.filter_by(module_id=module.id).delete()
                 db.session.delete(module)
                 db.session.commit()
                 flash(f"Модуль '{module.title}' удалён", "success")
+
+                activity = UserActivity(
+                    user_id=current_user.id,
+                    activity_type='module_deleted',
+                    description=f"Вы удалили модуль '{module.title}' из курса '{course.title}'"
+                )
+                db.session.add(activity)
+                db.session.commit()
 
         elif action == 'add_lesson':
             module_id = request.form.get('module_id', type=int)
@@ -594,6 +683,14 @@ def course_create_edit(course_id):
                 db.session.add(lesson)
                 db.session.commit()
                 flash(f"Урок '{title}' добавлен", "success")
+
+                activity = UserActivity(
+                    user_id=current_user.id,
+                    activity_type='lesson_added',
+                    description=f"Вы добавили урок '{title}' в курс '{course.title}'"
+                )
+                db.session.add(activity)
+                db.session.commit()
             else:
                 flash("Название урока и модуль обязательны.", "warning")
 
@@ -611,6 +708,14 @@ def course_create_edit(course_id):
                     lesson.position = position
                     db.session.commit()
                     flash(f"Урок '{title}' обновлён", "success")
+
+                    activity = UserActivity(
+                        user_id=current_user.id,
+                        activity_type='lesson_edited',
+                        description=f"Вы обновили урок '{title}' в курсе '{course.title}'"
+                    )
+                    db.session.add(activity)
+                    db.session.commit()
                 else:
                     flash("Название урока не может быть пустым.", "warning")
 
@@ -622,11 +727,27 @@ def course_create_edit(course_id):
                 db.session.commit()
                 flash(f"Урок '{lesson.title}' удалён", "success")
 
+                activity = UserActivity(
+                    user_id=current_user.id,
+                    activity_type='lesson_deleted',
+                    description=f"Вы удалили урок '{lesson.title}' из курса '{course.title}'"
+                )
+                db.session.add(activity)
+                db.session.commit()
+
         elif action == 'publish_course':
             if course.status != Course.STATUS_PUBLISHED:
                 course.status = Course.STATUS_PUBLISHED
                 db.session.commit()
                 flash("Курс успешно опубликован!", "success")
+
+                activity = UserActivity(
+                    user_id=current_user.id,
+                    activity_type='course_published',
+                    description=f"Вы опубликовали курс '{course.title}'"
+                )
+                db.session.add(activity)
+                db.session.commit()
             else:
                 flash("Курс уже опубликован.", "info")
 
