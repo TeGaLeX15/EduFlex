@@ -17,12 +17,13 @@ class LessonProgress(db.Model):
 
     def __repr__(self):
         return f'<LessonProgress User {self.user_id} Lesson {self.lesson_id}>'
-
-    def is_completed(self, total_tasks_count):
-        # Проверяем, чтобы completed_tasks не было None, и если это так, инициализируем как пустой список
-        if self.completed_tasks is None:
-            self.completed_tasks = []  # Инициализируем, если None
-        return self.theory_viewed and self.quiz_passed and len(self.completed_tasks) == total_tasks_count
+    
+    def is_completed(self):
+        if not self.lesson:
+            return False
+        if not self.theory_viewed:
+            return False
+        return self.quiz_passed if self.lesson.quiz else True
 
     def mark_completed(self):
         self.completed_at = datetime.utcnow()

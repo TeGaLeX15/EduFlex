@@ -410,6 +410,14 @@
   margin: 1rem 0;
   font-size: 1.125rem;
 }
+
+.course-detail .modules .module .lessons .lesson .locked-lesson {
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+    user-select: none;
+}
+
 .course-detail .modules .module .lessons .lesson .lesson-title {
   font-size: 1.125rem;
   font-weight: bold;

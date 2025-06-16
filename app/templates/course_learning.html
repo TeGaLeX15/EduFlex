@@ -87,11 +87,30 @@
             <div class="module-content" id="module-{{ module.id }}">
                 {% if module.lessons %}
                 <ul class="lessons">
-                    {% for lesson in module.lessons %}
+                    {% for i in range(module.lessons|length) %}
+                    {% set lesson = module.lessons[i] %}
+
+                    {% if i == 0 %}
+                    {% set is_unlocked = True %}
+                    {% else %}
+                    {% set prev_lesson = module.lessons[i - 1] %}
+                    {% set prev_progress = progress_dict.get(prev_lesson.id) %}
+                    {% set is_unlocked = prev_progress and prev_progress['completed'] %}
+                    {% endif %}
+
+                    <p>Урок {{ lesson.position }} (ID {{ lesson.id }}), prev_lesson_id: {{ prev_lesson.id if i > 0 else
+                        'нет' }}, is_unlocked: {{ is_unlocked }}</p>
+
                     <li class="lesson">
+                        {% if is_unlocked %}
                         <a href="{{ url_for('courses.course_learning', slug=course.slug, lesson_id=lesson.id) }}">
                             <strong>{{ lesson.position }}. {{ lesson.title }}</strong>
                         </a>
+                        {% else %}
+                        <span class="locked-lesson" title="Урок заблокирован. Пройдите предыдущий.">
+                            <strong>{{ lesson.position }}. {{ lesson.title }}</strong>
+                        </span>
+                        {% endif %}
                     </li>
                     {% endfor %}
                 </ul>

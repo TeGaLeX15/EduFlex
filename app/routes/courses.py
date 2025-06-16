@@ -111,40 +111,84 @@ def course_learning(slug):
         flash('Курс не найден', 'error')
         return redirect(url_for('courses.courses_main'))
 
+    # Собираем все ID уроков в курсе
+    all_lessons = (
+        Lesson.query
+        .join(Module)
+        .filter(Module.course_id == course.id)
+        .order_by(Module.position.asc(), Lesson.position.asc())
+        .all()
+    )
+
+    # Прогресс по всем урокам
+    lesson_ids = [lesson.id for lesson in all_lessons]
+    progresses = LessonProgress.query.filter(
+        LessonProgress.user_id == current_user.id,
+        LessonProgress.lesson_id.in_(lesson_ids)
+    ).all()
+    progress_dict = {p.lesson_id: {'completed': p.is_completed()} for p in progresses}
+
+    # Логируем для отладки:
+    print("progress_dict:", progress_dict)
+
     try:
-        current_user.courses.append(course)
-        db.session.commit()
+        if course not in current_user.courses:
+            current_user.courses.append(course)
+            db.session.commit()
 
-        activity = UserActivity(
-            user_id=current_user.id,
-            activity_type='start_course',
-            description=f'Пользователь начал изучать курс: "{course.title}"'
-        )
-        db.session.add(activity)
-        db.session.commit()
-
-        flash(f'Вы успешно начали курс "{course.title}"!', 'success')
+            activity = UserActivity(
+                user_id=current_user.id,
+                activity_type='start_course',
+                description=f'Пользователь начал изучать курс: "{course.title}"'
+            )
+            db.session.add(activity)
+            db.session.commit()
+            flash(f'Вы успешно начали курс "{course.title}"!', 'success')
     except Exception as e:
         db.session.rollback()
         flash('Произошла ошибка при начале курса.', 'error')
         print(f"Ошибка при добавлении курса: {e}")
 
     lesson_id = request.args.get('lesson_id', type=int)
-
     quizzes = []
-
     lesson = None
+
     if lesson_id:
         lesson = Lesson.query.get(lesson_id)
         if not lesson:
             flash('Урок не найден', 'error')
             return redirect(url_for('courses.course_detail', slug=slug))
 
+        # Получаем все уроки курса в порядке модулей и уроков
+        all_lessons = (
+            Lesson.query
+            .join(Module)
+            .filter(Module.course_id == course.id)
+            .order_by(Module.position.asc(), Lesson.position.asc())
+            .all()
+        )
+
+        # Проверка: разрешён ли доступ к уроку
+        lesson_index = next((i for i, l in enumerate(all_lessons) if l.id == lesson.id), None)
+        if lesson_index is not None and lesson_index > 0:
+            prev_lesson = all_lessons[lesson_index - 1]
+            prev_progress = LessonProgress.query.filter_by(user_id=current_user.id, lesson_id=prev_lesson.id).first()
+
+            prev_has_quiz = Quiz.query.filter_by(lesson_id=prev_lesson.id).count() > 0
+            prev_completed = (
+                (prev_progress and prev_progress.quiz_passed)
+                if prev_has_quiz
+                else (prev_progress and prev_progress.theory_viewed)
+            )
+
+            if not prev_completed:
+                flash('Сначала завершите предыдущий урок, прежде чем переходить к следующему.', 'error')
+                return redirect(url_for('courses.course_detail', slug=slug))
+
         # Markdown преобразование
         if lesson.content:
             lesson.content = markdown.markdown(lesson.content, extensions=['fenced_code', 'codehilite'])
 
-        # Получаем квизы по уроку
         quizzes = Quiz.query.filter_by(lesson_id=lesson_id).all()
 
         # Обновляем прогресс урока
@@ -156,22 +200,21 @@ def course_learning(slug):
         if lesson.content and not lesson_progress.theory_viewed:
             lesson_progress.theory_viewed = True
 
-        if lesson_progress.completed_tasks is None:
-            lesson_progress.completed_tasks = []
-
-        completed_task_ids = [task.id for task in lesson.tasks if task.is_completed]
-        lesson_progress.completed_tasks.extend(completed_task_ids)
-
-        if lesson_progress.is_completed(len(lesson.tasks)):
-            lesson_progress.mark_completed()
+        if quizzes:
+            # Прохождение теста должно фиксироваться отдельно
+            pass
+        else:
+            # Если тестов нет — урок считается завершён после просмотра
+            if not lesson_progress.quiz_passed:
+                lesson_progress.quiz_passed = True
 
         db.session.commit()
 
-        return render_template('course_learning.html', course=course, lesson=lesson, quizzes=quizzes)
+        return render_template('course_learning.html', course=course, lesson=lesson, quizzes=quizzes, progress_dict=progress_dict)
 
     # Если урок не выбран — показываем модули курса
     modules = course.modules
-    return render_template('course_learning.html', course=course, modules=modules)
+    return render_template('course_learning.html', course=course, modules=modules, progress_dict=progress_dict)
 
 @courses_bp.route('/course/<slug>/learning/<int:lesson_id>/details', methods=['GET'])
 @login_required
@@ -277,6 +320,24 @@ def quiz_page(course, quiz, session_key, score_key, attempt_recorded_key, curren
                 attempt.score = final_score
                 db.session.commit()
                 logger.info(f"📝 Попытка сохранена в момент завершения POST: id={attempt.id}, score={final_score}")
+
+                # ✅ Обновляем LessonProgress
+                try:
+                    progress = LessonProgress.query.filter_by(user_id=current_user.id, lesson_id=quiz.lesson.id).first()
+                    if not progress:
+                        progress = LessonProgress(user_id=current_user.id, lesson_id=quiz.lesson.id)
+
+                    progress.quiz_passed = True
+
+                    if progress.is_completed() and not progress.completed_at:
+                        progress.mark_completed()
+
+                    db.session.add(progress)
+                    db.session.commit()
+                    logger.info(f"📚 LessonProgress обновлён: quiz_passed=True, is_completed={progress.is_completed()}")
+                except Exception as e:
+                    db.session.rollback()
+                    logger.error(f"❌ Ошибка при обновлении LessonProgress: {e}")
 
                 # 📌 Добавляем запись об активности
                 try:

@@ -12,5 +12,13 @@ class Lesson(db.Model):
     # Связь с заданиями
     tasks = db.relationship('Task', backref='lesson_tasks', lazy=True)
 
+    # 🔗 Связь с квизами
+    quizzes = db.relationship('Quiz', back_populates='lesson', lazy=True)
+
+    # 💡 Геттер для удобства — если квиз один
+    @property
+    def quiz(self):
+        return self.quizzes[0] if self.quizzes else None
+
     def __repr__(self):
         return f'<Lesson {self.title}>'

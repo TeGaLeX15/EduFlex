@@ -13,7 +13,7 @@ class Quiz(db.Model):
     questions = db.relationship('Question', backref='quiz', lazy=True)
 
     # Связь с уроком
-    lesson = db.relationship('Lesson', backref=db.backref('quizzes', lazy=True), foreign_keys=[lesson_id])
+    lesson = db.relationship('Lesson', back_populates='quizzes', foreign_keys=[lesson_id], lazy=True)
 
     def __repr__(self):
         return f'<Quiz {self.title}>'
