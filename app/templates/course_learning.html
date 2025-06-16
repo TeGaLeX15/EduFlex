@@ -77,6 +77,12 @@
     </div>
     {% else %}
     <h2>Модули курса:</h2>
+
+    {% set lesson_index_map = {} %}
+    {% for l in all_lessons %}
+    {% set _ = lesson_index_map.update({l.id: loop.index0}) %}
+    {% endfor %}
+
     <div class="modules">
         {% for module in modules %}
         <div class="module">
@@ -87,19 +93,15 @@
             <div class="module-content" id="module-{{ module.id }}">
                 {% if module.lessons %}
                 <ul class="lessons">
-                    {% for i in range(module.lessons|length) %}
-                    {% set lesson = module.lessons[i] %}
-
-                    {% if i == 0 %}
+                    {% for lesson in module.lessons %}
+                    {% set index = lesson_index_map[lesson.id] %}
+                    {% if index == 0 %}
                     {% set is_unlocked = True %}
                     {% else %}
-                    {% set prev_lesson = module.lessons[i - 1] %}
+                    {% set prev_lesson = all_lessons[index - 1] %}
                     {% set prev_progress = progress_dict.get(prev_lesson.id) %}
                     {% set is_unlocked = prev_progress and prev_progress['completed'] %}
                     {% endif %}
-
-                    <p>Урок {{ lesson.position }} (ID {{ lesson.id }}), prev_lesson_id: {{ prev_lesson.id if i > 0 else
-                        'нет' }}, is_unlocked: {{ is_unlocked }}</p>
 
                     <li class="lesson">
                         {% if is_unlocked %}

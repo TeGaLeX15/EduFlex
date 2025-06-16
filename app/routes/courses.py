@@ -210,11 +210,11 @@ def course_learning(slug):
 
         db.session.commit()
 
-        return render_template('course_learning.html', course=course, lesson=lesson, quizzes=quizzes, progress_dict=progress_dict)
+        return render_template('course_learning.html', course=course, lesson=lesson, quizzes=quizzes, progress_dict=progress_dict, all_lessons=all_lessons)
 
     # Если урок не выбран — показываем модули курса
     modules = course.modules
-    return render_template('course_learning.html', course=course, modules=modules, progress_dict=progress_dict)
+    return render_template('course_learning.html', course=course, modules=modules, progress_dict=progress_dict, all_lessons=all_lessons)
 
 @courses_bp.route('/course/<slug>/learning/<int:lesson_id>/details', methods=['GET'])
 @login_required
